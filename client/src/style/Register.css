@@ -1,0 +1,153 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Poppins;
+}
+
+/* WRAPPER */
+.wrapper {
+  display: flex;
+  height: 100vh;
+  font-family: Poppins, sans-serif;
+  background: #fff;
+    overflow: hidden;
+}
+
+/* LEFT SECTION */
+.leftSection {
+  flex: 1;
+  background: #e9f0fb;
+  padding: 56px 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-top-right-radius: 40px;
+  border-bottom-right-radius: 40px;
+  box-sizing: border-box;
+}
+
+.textBlock {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.title {
+  font-size: 64px;
+  font-weight: 900;
+  color: #1e3f78;
+  margin: 0 0 20px 0;
+  line-height: 1;
+}
+
+.subtitle {
+  font-size: 20px;
+  color: #3f5f99;
+  font-weight: 600;
+  margin: 12px 0 0 0;
+}
+
+.illustration {
+  width: 105%;
+  margin-top: 50px;
+  object-fit: contain;
+  align-self: center;
+}
+
+/* RIGHT SECTION */
+.rightSection {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.formContainer {
+  width: 68%;
+  max-width: 420px;
+}
+
+.heading {
+  font-size: 36px;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.smallText {
+  font-size: 13px;
+  color: #585353;
+  margin-bottom: 22px;
+  text-align: left;
+}
+
+.label {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #333;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-top: 2px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  background: #f7f8fa;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.accountRow {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
+.smallNote {
+  font-size: 13px;
+  color: #444;
+}
+
+.signInLink {
+  cursor: pointer;
+}
+
+.signUpBtn {
+  width: 100%;
+  padding: 14px;
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.googleBtn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 14px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 15px;
+}
+
+.googleIcon {
+  width: 20px;
+  height: 20px;
+}
