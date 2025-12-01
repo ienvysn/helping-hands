@@ -144,13 +144,6 @@ const login = async (req, res) => {
       });
     }
 
-    if (!user.isActive) {
-      return res.status(401).json({
-        success: false,
-        message: "Account is deactivated",
-      });
-    }
-
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -188,6 +181,7 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
+  localStorage.removeItem("token");
   res.json({
     success: true,
     message: "Logout successful",
@@ -219,8 +213,7 @@ const getCurrentUser = async (req, res) => {
         user: {
           id: user._id,
           email: user.email,
-          userType: user.userType,
-          isActive: user.isActive,
+
           createdAt: user.createdAt,
         },
         profile,

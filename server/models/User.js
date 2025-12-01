@@ -18,10 +18,6 @@ const userSchema = new mongoose.Schema({
     enum: ["volunteer", "organization"],
     required: true,
   },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
   createdAt: {
     type: Date,
     default: Date.now,
