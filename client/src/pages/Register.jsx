@@ -86,10 +86,17 @@ const Register = () => {
             />
 
             <div className="accountRow">
-              <span className="smallNote">
-                Already have an account? <b className="signInLink">Sign In</b>
-              </span>
-            </div>
+  <span className="smallNote">
+    Already have an account? 
+    <b
+      style={{ cursor: "pointer", color: "#007bff" }}
+      onClick={() => window.location.href = "/"}
+    >
+      {" "}Sign In
+    </b>
+  </span>
+</div>
+
 
             <button type="submit" className="signUpBtn">
               Sign Up

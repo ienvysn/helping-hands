@@ -75,9 +75,20 @@ const Login = () => {
             />
 
             <div className="linksRow">
-              <span>Don’t have an account? <b>Sign Up</b></span>
-              <span><b>Forgot Password?</b></span>
-            </div>
+              
+  <span>
+    Don’t have an account? 
+    <b 
+      style={{cursor: "pointer", color: "#007bff"}} 
+      onClick={() => window.location.href = "/register"}
+    >
+      {" "}Sign Up
+    </b>
+  </span>
+
+  <span><b>Forgot Password?</b></span>
+</div>
+
 
             <button type="submit" className="signInBtn">
               Sign In
