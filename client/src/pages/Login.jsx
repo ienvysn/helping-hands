@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // <-- useNavigate
 import "../style/Login.css"; 
-
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // <-- initialize navigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +23,6 @@ const Login = () => {
       if (res.ok) {
         alert("Login successful!");
         localStorage.setItem("token", data.token);
-        
       } else {
         alert(data.message || "Login failed");
       }
@@ -34,7 +34,6 @@ const Login = () => {
 
   return (
     <div className="wrapper">
-      {/* LEFT SIDE */}
       <div className="leftSection">
         <h1 className="title">Helping Hands</h1>
         <p className="subtitle">Your Hands Can Change Lives</p>
@@ -45,7 +44,6 @@ const Login = () => {
         />
       </div>
 
-      {/* RIGHT SIDE */}
       <div className="rightSection">
         <div className="formContainer">
           <h2 className="heading">Welcome Back!</h2>
@@ -75,20 +73,25 @@ const Login = () => {
             />
 
             <div className="linksRow">
-              
-  <span>
-    Don’t have an account? 
-    <b 
-      style={{cursor: "pointer", color: "#007bff"}} 
-      onClick={() => window.location.href = "/register"}
-    >
-      {" "}Sign Up
-    </b>
-  </span>
+              <span>
+                Don’t have an account? 
+                <b 
+                  style={{cursor: "pointer", color: "#007bff"}} 
+                  onClick={() => navigate("/register")} // <-- Sign Up
+                >
+                  {" "}Sign Up
+                </b>
+              </span>
 
-  <span><b>Forgot Password?</b></span>
-</div>
-
+              <span>
+                <b 
+                  style={{cursor: "pointer", color: "#007bff"}} 
+                  onClick={() => navigate("/forgot-password")} // <-- Forgot Password
+                >
+                  Forgot Password?
+                </b>
+              </span>
+            </div>
 
             <button type="submit" className="signInBtn">
               Sign In
