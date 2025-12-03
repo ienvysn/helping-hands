@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
     enum: ["volunteer", "organization"],
     required: true,
   },
+
   createdAt: {
     type: Date,
     default: Date.now,
@@ -26,6 +27,8 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  resetPasswordToken: String,
+  resetPasswordExpiry: Date,
 });
 
 userSchema.pre("save", () => {
