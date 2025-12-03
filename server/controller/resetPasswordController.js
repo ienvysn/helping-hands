@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const { sendEmail } = require("../utils/email");
 
 const validatePassword = (password) => {
   const errors = [];
@@ -39,12 +40,15 @@ const forgetPassword = async (req, res) => {
 
     const resetLink = `http://localhost:3000/reset-password?token=${token}`;
 
-    console.log("Password reset link:", resetLink);
-    console.log("Token:", token);
+    await sendEmail(
+      user.email,
+      "Password Reset Request",
+      `Click this link to reset your password: ${resetLink}\n\nThis link expires in 1 hour.`
+    );
 
     res.json({
       success: true,
-      message: "Password reset link generated (check console)",
+      message: "Password reset link generated (check mail)",
     });
   } catch (error) {
     console.error("Forget password error:", error);

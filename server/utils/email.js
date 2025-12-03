@@ -9,12 +9,14 @@ const sendEmail = async (to, subject, text) => {
     },
   });
 
-  await transporter.sendMail({
+  const mailOptions = {
     from: process.env.EMAIL_USER,
-    to,
-    subject,
-    text,
-  });
+    to: to,
+    subject: subject,
+    text: text,
+  };
+
+  await transporter.sendMail(mailOptions);
 };
 
-module.exports = sendEmail;
+module.exports = { sendEmail };
