@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "../style/LandingPage.css";
 
 function LandingPage() {
-  const [activeTab, setActiveTab] = useState("volunteer");
+  const [userType, setUserType] = useState("volunteer");
 
   return (
     <div className="landing-page">
@@ -12,7 +12,12 @@ function LandingPage() {
         </div>
       </nav>
 
-      <section className="hero">
+      <section
+        className="hero"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url(${process.env.PUBLIC_URL}/images/landingimage.jpg)`,
+        }}
+      >
         <div className="hero-overlay">
           <div className="hero-content">
             <h1 className="hero-title">Make a Difference, Together.</h1>
@@ -27,17 +32,17 @@ function LandingPage() {
             <div className="hero-tabs">
               <button
                 className={`hero-tab ${
-                  activeTab === "volunteer" ? "active" : ""
+                  userType === "volunteer" ? "active" : ""
                 }`}
-                onClick={() => setActiveTab("volunteer")}
+                onClick={() => setUserType("volunteer")}
               >
                 Volunteer
               </button>
               <button
                 className={`hero-tab ${
-                  activeTab === "organization" ? "active" : ""
+                  userType === "organization" ? "active" : ""
                 }`}
-                onClick={() => setActiveTab("organization")}
+                onClick={() => setUserType("organization")}
               >
                 Organization
               </button>
@@ -63,15 +68,15 @@ function LandingPage() {
               </svg>
             </div>
             <h2 className="card-title">
-              I'm a {activeTab === "volunteer" ? "Volunteer" : "Organization"}
+              I'm a {userType === "volunteer" ? "Volunteer" : "Organization"}
             </h2>
             <p className="card-description">
-              {activeTab === "volunteer"
+              {userType === "volunteer"
                 ? "Discover local events and track your impact in the community."
                 : "Post opportunities and connect with passionate volunteers."}
             </p>
             <button className="card-btn">
-              Create {activeTab === "volunteer" ? "Volunteer" : "Organization"}{" "}
+              Create {userType === "volunteer" ? "Volunteer" : "Organization"}{" "}
               Account
             </button>
           </div>
@@ -92,10 +97,10 @@ function LandingPage() {
             </div>
             <h2 className="card-title">
               Already a{" "}
-              {activeTab === "volunteer" ? "Volunteer" : "Organization"}?
+              {userType === "volunteer" ? "Volunteer" : "Organization"}?
             </h2>
             <p className="card-description">
-              Sign in to your existing {activeTab} account
+              Sign in to your existing {userType} account
             </p>
             <button className="card-btn">Sign In</button>
           </div>
