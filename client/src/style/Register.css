@@ -1,33 +1,29 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Poppins;
+  font-family: Poppins, sans-serif; 
 }
 
-/* WRAPPER */
 .wrapper {
-  display: flex;
-  height: 100vh;
-  font-family: Poppins, sans-serif;
+  display: flex; 
+  height: 100vh; 
   background: #fff;
-    overflow: hidden;
+  overflow: hidden; 
 }
 
 /* LEFT SECTION */
 .leftSection {
-  flex: 1;
-  background: #e9f0fb;
-  padding: 56px 72px;
+  flex: 1.5; 
+  background: #e9f0fb; 
+  padding: 60px 50px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  border-top-right-radius: 40px;
+  justify-content: center; 
+  border-top-right-radius: 40px; 
   border-bottom-right-radius: 40px;
-  box-sizing: border-box;
 }
 
 .textBlock {
@@ -36,37 +32,37 @@
 }
 
 .title {
-  font-size: 64px;
-  font-weight: 900;
-  color: #1e3f78;
-  margin: 0 0 20px 0;
-  line-height: 1;
+  font-size: 90px;
+  font-weight: 900; 
+  color: #123a7d; 
+  text-align: center;
 }
 
 .subtitle {
   font-size: 20px;
-  color: #3f5f99;
-  font-weight: 600;
-  margin: 12px 0 0 0;
+  margin-top: 10px;
+  color: #345f9c; 
+  text-align: center;
 }
 
 .illustration {
-  width: 105%;
-  margin-top: 50px;
+  width: 100%;
+  position: relative;
+  top: 70px; 
   object-fit: contain;
   align-self: center;
 }
 
 /* RIGHT SECTION */
 .rightSection {
-  flex: 1;
+  flex: 1; 
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; 
+  align-items: center; 
 }
 
 .formContainer {
-  width: 68%;
+  width: 68%; 
   max-width: 420px;
 }
 
@@ -100,7 +96,7 @@
   margin-bottom: 14px;
   border-radius: 10px;
   border: 1px solid #eee;
-  background: #f7f8fa;
+  background: #f7f8fa; 
   font-size: 14px;
   box-sizing: border-box;
 }
@@ -108,6 +104,7 @@
 .accountRow {
   display: flex;
   justify-content: flex-start;
+  margin-top: 10px;
   margin-bottom: 12px;
 }
 
@@ -123,7 +120,7 @@
 .signUpBtn {
   width: 100%;
   padding: 14px;
-  background: #000;
+  background: #000; 
   color: #fff;
   font-size: 16px;
   border-radius: 12px;

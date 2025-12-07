@@ -3,7 +3,6 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const session = require("express-session");
-const connectDB = require("./config/db");
 const passport = require("./utils/passport");
 
 const app = express();

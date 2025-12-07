@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import "../style/Login.css";
+import { useNavigate } from "react-router-dom";
+import "../style/Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,6 +79,25 @@ const Login = () => {
               </span>
               <span>
                 <b>Forgot Password?</b>
+              </span>
+              <span>
+                Don’t have an account?
+                <b
+                  style={{ cursor: "pointer", color: "#007bff" }}
+                  onClick={() => navigate("/register")} // <-- Sign Up
+                >
+                  {" "}
+                  Sign Up
+                </b>
+              </span>
+
+              <span>
+                <b
+                  style={{ cursor: "pointer", color: "#007bff" }}
+                  onClick={() => navigate("/forgot-password")} // <-- Forgot Password
+                >
+                  Forgot Password?
+                </b>
               </span>
             </div>
 
