@@ -43,7 +43,4 @@ volunteerProfileSchema.virtual("level").get(function () {
   return Math.floor(this.totalHours / 100) + 4;
 });
 
-volunteerProfileSchema.set("toJSON", { virtuals: true });
-volunteerProfileSchema.set("toObject", { virtuals: true });
-
 module.exports = mongoose.model("VolunteerProfile", volunteerProfileSchema);

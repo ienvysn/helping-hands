@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import "../style/Login.css";
+import { useNavigate, useLocation } from "react-router-dom";
+import "../style/Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,17 +27,18 @@ const Login = () => {
         alert("Login successful!");
         localStorage.setItem("token", data.token);
       } else {
-        alert(data.message || "Login failed");
+        setSubmitError(data.message || "Login failed");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Server not responding");
+      setSubmitError("Server not responding");
     }
   };
-
+  const handleGoogleSignIn = () => {
+    window.location.href = `http://localhost:5000/api/auth/google?userType=volunteer`;
+  };
   return (
     <div className="wrapper">
-      {/* LEFT SIDE */}
       <div className="leftSection">
         <h1 className="title">Helping Hands</h1>
         <p className="subtitle">Your Hands Can Change Lives</p>
@@ -43,7 +49,6 @@ const Login = () => {
         />
       </div>
 
-      {/* RIGHT SIDE */}
       <div className="rightSection">
         <div className="formContainer">
           <h2 className="heading">Welcome Back!</h2>
@@ -58,7 +63,10 @@ const Login = () => {
               type="email"
               placeholder="Enter your email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setSubmitError("");
+              }}
               required
             />
 
@@ -68,16 +76,38 @@ const Login = () => {
               type="password"
               placeholder="Enter your password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setSubmitError("");
+              }}
               required
             />
-
+            {submitError && <p className="error-message">{submitError}</p>}
             <div className="linksRow">
               <span>
-                Don’t have an account? <b>Sign Up</b>
+                Don't have an account?
+                <b
+                  style={{ cursor: "pointer", color: "#007bff" }}
+                  onClick={() =>
+                    navigate("/register", {
+                      state: {
+                        userType: location.state?.userType || "volunteer",
+                      },
+                    })
+                  }
+                >
+                  {" "}
+                  Sign Up
+                </b>
               </span>
+
               <span>
-                <b>Forgot Password?</b>
+                <b
+                  style={{ cursor: "pointer", color: "#007bff" }}
+                  onClick={() => navigate("/forgot-password")} // <-- Forgot Password
+                >
+                  Forgot Password?
+                </b>
               </span>
             </div>
 
@@ -85,7 +115,11 @@ const Login = () => {
               Sign In
             </button>
 
-            <button type="button" className="googleBtn">
+            <button
+              type="button"
+              className="googleBtn"
+              onClick={handleGoogleSignIn}
+            >
               <img
                 src="/images/google.png"
                 alt="google"

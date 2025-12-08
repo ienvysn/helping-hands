@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-const isAuthenticated = async (req, res) => {
+const isAuthenticated = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -25,18 +25,13 @@ const isAuthenticated = async (req, res) => {
       });
     }
 
-    if (!user.isActive) {
-      return res.status(401).json({
-        success: false,
-        message: "Account deactivated",
-      });
-    }
-
     req.user = {
       id: user._id,
       email: user.email,
       userType: user.userType,
     };
+
+    next();
   } catch (error) {
     return res.status(401).json({
       success: false,
@@ -45,19 +40,21 @@ const isAuthenticated = async (req, res) => {
   }
 };
 
-const isVolunteer = (req, res) => {
+const isVolunteer = (req, res, next) => {
   if (req.user && req.user.userType === "volunteer") {
+    return next();
   }
-  res.status(403).json({
+  return res.status(403).json({
     success: false,
     message: "Volunteers only",
   });
 };
 
-const isOrganization = (req, res) => {
+const isOrganization = (req, res, next) => {
   if (req.user && req.user.userType === "organization") {
+    return next();
   }
-  res.status(403).json({
+  return res.status(403).json({
     success: false,
     message: "Organizations only",
   });

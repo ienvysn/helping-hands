@@ -2,28 +2,44 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const session = require("express-session");
+const passport = require("passport");
+require("./utils/passport");
 
 const app = express();
 
-// Connect to MongoDB
-connectDB();
-
-// CORS options
 const corsOptions = {
   origin: process.env.CLIENT_URL || "http://localhost:3000",
   credentials: true,
 };
 
-// Middleware
-app.use(cors(corsOptions)); // <- only once
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
-// Routes
+///required for Oauth
+app.use(
+  session({
+    secret: process.env.JWT_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false,
+      maxAge: 10 * 60 * 1000,
+    },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 app.use("/api/auth", require("./routes/authRoutes"));
 
-// Root
-app.get("/", (req, res) => res.json({ message: "Volunteer App API is running" }));
+app.get("/", (req, res) =>
+  res.json({ message: "Volunteer App API is running" })
+);
 
-// Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+});
