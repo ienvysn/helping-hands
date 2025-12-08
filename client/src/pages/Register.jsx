@@ -1,35 +1,36 @@
 import React, { useState } from "react";
 import "../style/Register.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Register = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const userType = location.state?.userType || "volunteer";
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const userType = "volunteer";
+  const [passwordError, setPasswordError] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
   const validatePassword = (value) => {
     const regex = /^(?=.*[0-9]).{6,}$/;
 
     if (value.length === 0) {
-      setError("");
+      setPasswordError("");
       return;
     }
 
     if (!regex.test(value)) {
-      setError("Password must be at least 6 characters with a number");
+      setPasswordError("Password must be at least 6 characters with a number");
     } else {
-      setError("");
+      setPasswordError("");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (error || password.trim() === "") {
+    if (passwordError || password.trim() === "") {
       alert("Please enter a valid password.");
       return;
     }
@@ -49,13 +50,16 @@ const Register = () => {
         alert("Register successful!");
         navigate("/");
       } else {
-        setError("Email already exists. Please log in.");
+        setSubmitError("Email already exists. Please log in.");
       }
     } catch (error) {
       console.error("Signup error:", error);
+      setSubmitError("Server error. Please try again.");
     }
   };
-
+  const handleGoogleSignIn = () => {
+    window.location.href = `http://localhost:5000/api/auth/google?userType=${userType}`;
+  };
   return (
     <div className="wrapper">
       <div className="leftSection">
@@ -87,7 +91,10 @@ const Register = () => {
               type="text"
               placeholder="Enter your username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                setSubmitError("");
+              }}
             />
 
             {/* Email */}
@@ -97,10 +104,12 @@ const Register = () => {
               type="email"
               placeholder="Enter your email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setSubmitError("");
+              }}
             />
 
-            {/* Password */}
             <label className="label">Password</label>
             <input
               className="input"
@@ -111,11 +120,12 @@ const Register = () => {
                 const value = e.target.value;
                 setPassword(value);
                 validatePassword(value);
+                setSubmitError("");
               }}
             />
-
-            {/* Password error message */}
-            {error && <p className="error-message">{error}</p>}
+            {/*  error message */}
+            {passwordError && <p className="error-message">{passwordError}</p>}
+            {submitError && <p className="error-message">{submitError}</p>}
 
             {/* Already have an account */}
             <div className="accountRow">
@@ -132,18 +142,25 @@ const Register = () => {
             </div>
 
             {/* Sign Up button */}
-            <button type="submit" className="signUpBtn" disabled={error !== ""}>
+            <button
+              type="submit"
+              className="signUpBtn"
+              disabled={passwordError !== ""}
+            >
               Sign Up
             </button>
 
-            {/* Google sign-in */}
-            <button type="button" className="googleBtn">
+            <button
+              type="button"
+              className="googleBtn"
+              onClick={handleGoogleSignIn}
+            >
               <img
                 src="/images/google.png"
                 alt="Google"
                 className="googleIcon"
               />
-              Sign in with Google
+              Sign up with Google
             </button>
           </form>
         </div>

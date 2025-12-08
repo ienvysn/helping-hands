@@ -3,11 +3,11 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const session = require("express-session");
-const passport = require("./utils/passport");
+const passport = require("passport");
+require("./utils/passport");
 
 const app = express();
 
-connectDB();
 const corsOptions = {
   origin: process.env.CLIENT_URL || "http://localhost:3000",
   credentials: true,
@@ -29,7 +29,8 @@ app.use(
     },
   })
 );
-
+app.use(passport.initialize());
+app.use(passport.session());
 app.use("/api/auth", require("./routes/authRoutes"));
 
 app.get("/", (req, res) =>
@@ -37,4 +38,8 @@ app.get("/", (req, res) =>
 );
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+});

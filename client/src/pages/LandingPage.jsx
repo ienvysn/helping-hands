@@ -52,7 +52,10 @@ function LandingPage() {
                 className={`hero-tab ${
                   userType === "organization" ? "active" : ""
                 }`}
-                onClick={() => setUserType("organization")}
+                onClick={() => {
+                  setUserType("organization");
+                  console.log("user is org");
+                }}
               >
                 Organization
               </button>
