@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const { register, login } = require("../controller/authController");
+const { register, login, deleteAccount } = require("../controller/authController");
+const { isAuthenticated } = require("../middleware/auth");
 const {
   forgetPassword,
   resetPassword,
@@ -15,6 +16,7 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/forget-password", forgetPassword);
 router.post("/reset-password", resetPassword);
+router.delete("/delete-account", isAuthenticated, deleteAccount);
 
 // Google OAuth routes
 router.get("/google", initiateGoogleAuth);

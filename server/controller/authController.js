@@ -159,4 +159,39 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-module.exports = { register, login, logout, getCurrentUser };
+const deleteAccount = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.userType === "volunteer") {
+      await Volunteer.deleteOne({ userId: user._id });
+    } else if (user.userType === "organization") {
+      await Organization.deleteOne({ userId: user._id });
+    }
+
+    await User.findByIdAndDelete(userId);
+
+    res.status(200).json({
+      success: true,
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete account error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error deleting account",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { register, login, logout, getCurrentUser, deleteAccount };
