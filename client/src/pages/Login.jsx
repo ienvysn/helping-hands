@@ -21,11 +21,10 @@ const Login = () => {
       });
 
       const data = await res.json();
-      console.log("Backend response:", data);
 
       if (res.ok) {
-        alert("Login successful!");
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.data.token);
+        navigate("/profile");
       } else {
         setSubmitError(data.message || "Login failed");
       }
@@ -104,7 +103,7 @@ const Login = () => {
               <span>
                 <b
                   style={{ cursor: "pointer", color: "#007bff" }}
-                  onClick={() => navigate("/forgot-password")} // <-- Forgot Password
+                  onClick={() => navigate("/forgot-password")}
                 >
                   Forgot Password?
                 </b>
