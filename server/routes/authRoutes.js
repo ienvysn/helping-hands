@@ -1,7 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const { register, login, deleteAccount } = require("../controller/authController");
+const {
+  register,
+  login,
+  deleteAccount,
+} = require("../controller/authController");
 const { isAuthenticated } = require("../middleware/auth");
 const {
   forgetPassword,
