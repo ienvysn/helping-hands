@@ -1,90 +1,107 @@
-import React, { useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './ResetPassword.css';
+import React, { useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+
+import "../style/ResetPassword.css";
 
 function ResetPassword() {
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  
+
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  
+
   // Get token from URL query parameter
-  const token = searchParams.get('token');
+  const token = searchParams.get("token");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setSuccess(false);
 
     // Validation
     if (!newPassword || !confirmPassword) {
-      setError('Please fill in all fields');
+      setError("Please fill in all fields");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError("Password must be at least 6 characters");
       return;
     }
 
     if (!/[0-9]/.test(newPassword)) {
-      setError('Password must contain at least one number');
+      setError("Password must contain at least one number");
       return;
     }
 
     if (!token) {
-      setError('Invalid reset link. Please request a new password reset.');
+      setError("Invalid reset link. Please request a new password reset.");
       return;
     }
 
     setLoading(true);
 
     try {
-      // Call your friend's backend API - exact endpoint and field name
-      const response = await axios.post('http://localhost:5000/api/auth/reset-password', {
-        token: token,
-        newPassword: newPassword
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/auth/reset-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: token,
+            newPassword: newPassword,
+          }),
+        }
+      );
 
-      if (response.data.success) {
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Backend validation errors
+        if (data.errors) {
+          setError(data.errors.join(", "));
+        } else {
+          setError(
+            data.message || "Failed to reset password. Please try again."
+          );
+        }
+        return;
+      }
+
+      if (data.success) {
         setSuccess(true);
-        alert('Password reset successful! Redirecting to login...');
+        alert("Password reset successful! Redirecting to login...");
         setTimeout(() => {
-          navigate('/login');
+          navigate("/login");
         }, 2000);
       }
     } catch (err) {
-      // Handle error response from backend
-      if (err.response?.data?.errors) {
-        // Show validation errors from backend
-        setError(err.response.data.errors.join(', '));
-      } else {
-        setError(err.response?.data?.message || 'Failed to reset password. Please try again.');
-      }
+      setError("Failed to reset password. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="reset-password-wrapper">
       <div className="reset-password-modal">
-        <button className="close-btn" onClick={() => navigate('/')}>×</button>
-        
+        <button className="close-btn" onClick={() => navigate("/")}>
+          ×
+        </button>
+
         <h2>Change password</h2>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Enter your new password</label>
@@ -102,7 +119,7 @@ function ResetPassword() {
                 onClick={() => setShowNewPassword(!showNewPassword)}
                 tabIndex="-1"
               >
-                {showNewPassword ? '👁️' : '👁️‍🗨️'}
+                {showNewPassword ? "👁️" : "👁️‍🗨️"}
               </button>
             </div>
           </div>
@@ -123,20 +140,22 @@ function ResetPassword() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 tabIndex="-1"
               >
-                {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
               </button>
             </div>
           </div>
 
           {error && <p className="error-message">❌ {error}</p>}
-          {success && <p className="success-message">✅ Password reset successful!</p>}
+          {success && (
+            <p className="success-message">✅ Password reset successful!</p>
+          )}
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="confirm-btn"
             disabled={loading || success}
           >
-            {loading ? 'Processing...' : success ? 'Success!' : 'Confirm'}
+            {loading ? "Processing..." : success ? "Success!" : "Confirm"}
           </button>
         </form>
 
