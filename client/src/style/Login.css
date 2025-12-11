@@ -123,3 +123,87 @@
   text-align: center;
   font-size: 0.875rem;
 }
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  
+  .wrapper {
+    flex-direction: column;
+    height: auto;
+    padding: 20px 0;
+  }
+
+  /* Left Section */
+  .leftSection {
+    flex: none;
+    width: 100%;
+    padding: 40px 20px;
+    border-radius: 0;
+    text-align: center;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+  }
+
+  .illustration {
+    width: 70%;
+    margin-top: 20px;
+  }
+
+  /* Right Section */
+  .rightSection {
+    flex: none;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .formContainer {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .heading {
+    font-size: 24px;
+  }
+
+  .smallText {
+    font-size: 12px;
+  }
+
+  .label {
+    font-size: 12px;
+  }
+
+  .input {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .linksRow {
+    flex-direction: column;
+    gap: 10px;
+    font-size: 12px;
+  }
+
+  .signInBtn, .googleBtn {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .googleIcon {
+    width: 24px;
+    margin-right: 12px;
+  }
+
+  .error-message {
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+}

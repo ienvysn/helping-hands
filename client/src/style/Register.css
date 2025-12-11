@@ -148,3 +148,79 @@
   width: 20px;
   height: 20px;
 }
+/*Responsive */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .wrapper {
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+    padding: 10px 0;
+  }
+
+  .leftSection {
+    flex: none;
+    width: 100%;
+    padding: 30px 20px;
+    border-radius: 0;
+    text-align: center;
+  }
+
+  .title {
+    font-size: 42px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+
+  .illustration {
+    top: 40px;
+    width: 70%;
+  }
+
+  .rightSection {
+    flex: none;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .formContainer {
+    width: 80%;
+    margin: 0 auto;
+  }
+
+  .heading {
+    font-size: 26px;
+  }
+
+  .smallText,
+  .smallNote {
+    font-size: 12px;
+    text-align: left;
+  }
+
+  .label {
+    font-size: 12px;
+  }
+
+  .input {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .accountRow {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .signUpBtn,
+  .googleBtn {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  .googleIcon {
+    width: 18px;
+    height: 18px;
+  }
+}

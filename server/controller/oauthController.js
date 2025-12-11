@@ -15,7 +15,7 @@ const handleGoogleCallback = (req, res) => {
     const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
-    S;
+    
     // Redirect to frontend with token and userType
     return res.redirect(
       `http://localhost:3000/auth/callback?token=${token}&userType=${req.user.userType}`

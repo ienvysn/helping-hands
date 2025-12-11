@@ -312,7 +312,7 @@
 }
 
 /* Responsive */
-@media(max-width: 768px){
+@media (max-width: 768px) {
   .profileContent { 
     padding: 1rem; 
   }
@@ -324,7 +324,28 @@
 
   .avatarSection { 
     flex-direction: column; 
-    text-align: center; 
+    align-items: center; 
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .avatarCircle {
+    width: 60px;
+    height: 60px;
+  }
+
+  .levelBadge {
+    width: 22px;
+    height: 22px;
+    font-size: 0.75rem;
+  }
+
+  .avatarInfo h3 {
+    font-size: 1rem;
+  }
+
+  .avatarInfo p {
+    font-size: 0.8rem;
   }
 
   .settingsRow { 
@@ -337,7 +358,7 @@
     flex-direction: column; 
   }
 
-  .saveBtn, .cancelBtn { 
+  .saveBtn, .cancelBtn, .logoutBtn, .deleteBtn { 
     width: 100%; 
   }
 
@@ -346,7 +367,17 @@
     gap: 0.75rem; 
   }
 
-  .deleteBtn, .logoutBtn, .buttonSpacer { 
-    width: 100%; 
+  /* Navbar */
+  .navLeft, .navRight, .navMenu {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .navLogo {
+    font-size: 1rem;
+  }
+
+  .navLink {
+    font-size: 0.85rem;
   }
 }
