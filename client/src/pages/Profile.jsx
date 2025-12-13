@@ -31,29 +31,48 @@ const Profile = () => {
       .catch((err) => console.error("Error fetching profile:", err));
   }, []);
 
-  // Save changes to backend
-  const handleSave = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch("http://localhost:5000/api/user/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          displayName,
-          email,
-          location,
-          preferredCauses,
-          aboutMe,
-          emailReminders,
-          levelUpdates,
-        }),
-      });
-      if (res.ok) alert("Changes saved successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Error saving changes");
-    }
-  };
+
+
+  // Save changes to backend
+  const handleSave = async (e) => {
+    e.preventDefault();
+    
+    // CRUCIAL: Get the JWT token from local storage
+    const token = localStorage.getItem("token"); 
+
+    try {
+      const res = await fetch("http://localhost:5000/api/user/profile", {
+        method: "PUT",
+        headers: { 
+            "Content-Type": "application/json",
+            // ADD AUTHORIZATION HEADER HERE
+            Authorization: `Bearer ${token}`, 
+        },
+        body: JSON.stringify({
+          displayName,
+          email,
+          location,
+          preferredCauses,
+          aboutMe,
+          emailReminders,
+          levelUpdates,
+        }),
+      });
+      
+      if (res.ok) {
+        alert("Changes saved successfully!");
+      } else {
+        const errorData = await res.json();
+        console.error("Save failed:", errorData);
+        alert(`Error saving changes: ${errorData.message || 'Unauthorized or server error'}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error saving changes: Network or server connection failed.");
+    }
+  };
+
+// ... (rest of Profile.jsx component) ...
 
   const handleCancel = () => {
     setDisplayName("Brad Pitt");

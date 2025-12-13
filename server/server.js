@@ -8,6 +8,10 @@ require("./utils/passport");
 
 const app = express();
 
+const authRoutes = require("./routes/authRoutes"); 
+
+const userRoutes = require("./routes/userRoutes");
+
 const corsOptions = {
   origin: process.env.CLIENT_URL || "http://localhost:3000",
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -34,6 +38,8 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/user", userRoutes);
+
 
 app.get("/", (req, res) =>
   res.json({ message: "Volunteer App API is running" })
