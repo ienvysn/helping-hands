@@ -16,7 +16,7 @@ const validatePassword = (password) => {
 };
 
 const register = async (req, res) => {
-  const { email, password, userType, username } = req.body;
+  const { email, password, userType, displayName } = req.body;
   try {
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: "User already exists" });
@@ -41,13 +41,13 @@ const register = async (req, res) => {
     if (userType === "volunteer") {
       const volunteerProfile = new Volunteer({
         userId: user._id,
-        displayName: username || "",
+        displayName: displayName || "",
       });
       await volunteerProfile.save();
     } else if (userType === "organization") {
       const organizationProfile = new Organization({
         userId: user._id,
-        organizationName: username || "",
+        organizationName: displayName || "",
       });
       await organizationProfile.save();
     }
@@ -62,7 +62,7 @@ const register = async (req, res) => {
       user: {
         email,
         userType,
-        username,
+        displayName,
       },
     });
   } catch (err) {

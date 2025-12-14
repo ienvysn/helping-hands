@@ -4,6 +4,10 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const session = require("express-session");
 const passport = require("passport");
+const authRoute = require("./routes/authRoutes");
+
+const userRoutes = require("./routes/userRoutes");
+
 require("./utils/passport");
 
 const app = express();
@@ -33,7 +37,8 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/auth", authRoute);
+app.use("/api/user", userRoutes);
 
 app.get("/", (req, res) =>
   res.json({ message: "Volunteer App API is running" })
