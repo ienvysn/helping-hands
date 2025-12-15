@@ -1,4 +1,3 @@
-// server/routes/userRoutes.js
 const express = require("express");
 const router = express.Router();
 const {
@@ -13,12 +12,14 @@ const {
 } = require("../middleware/auth");
 
 router.get("/profile", isAuthenticated, getProfile);
+
 router.put(
   "/profile/volunteer",
   isAuthenticated,
   isVolunteer,
   updateVolunteerProfile
 );
+
 router.put(
   "/profile/organization",
   isAuthenticated,

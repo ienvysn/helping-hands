@@ -5,14 +5,15 @@ import "../style/Profile.css";
 const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState(false);
   const [error, setError] = useState("");
+
+  const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Form fields
-  const [displayName, setDisplayName] = useState("");
-  const [aboutMe, setAboutMe] = useState("");
-  const [email, setEmail] = useState("");
+  const [formData, setFormData] = useState({
+    displayName: "",
+    aboutMe: "",
+  });
 
   useEffect(() => {
     fetchProfile();
@@ -28,24 +29,16 @@ const Profile = () => {
         return;
       }
 
-      const res = await fetch("http://localhost:5000/api/auth/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await fetch("http://localhost:5000/api/user/profile", {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await res.json();
 
       if (data.success) {
         setProfile(data.data);
-        setEmail(data.data.user.email);
-
-        if (data.data.user.userType === "volunteer") {
-          setDisplayName(data.data.profile?.displayName || "");
-          setAboutMe(data.data.profile?.aboutMe || "");
-        }
       } else {
-        setError(data.message);
+        setError(data.message || "Failed to load profile");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -55,18 +48,31 @@ const Profile = () => {
     }
   };
 
-  const handleEdit = () => {
+  const handleEdit = (e) => {
+    e.preventDefault();
+    if (profile?.profile) {
+      setFormData({
+        displayName: profile.profile.displayName || "",
+        aboutMe: profile.profile.aboutMe || "",
+      });
+    }
     setEditMode(true);
+  };
+
+  const handleCancel = () => {
+    setEditMode(false);
+    setError("");
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
 
-    try {
-      setSaving(true);
-      setError("");
-      const token = localStorage.getItem("token");
+    if (!editMode) return;
+    setSaving(true);
+    setError("");
 
+    try {
+      const token = localStorage.getItem("token");
       const res = await fetch(
         "http://localhost:5000/api/user/profile/volunteer",
         {
@@ -75,67 +81,47 @@ const Profile = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            displayName,
-            aboutMe,
-          }),
+          body: JSON.stringify(formData),
         }
       );
 
       const data = await res.json();
 
       if (data.success) {
-        setProfile({
-          ...profile,
+        setProfile((prev) => ({
+          ...prev,
           profile: data.data,
-        });
+        }));
         setEditMode(false);
         alert("Profile updated successfully!");
       } else {
-        setError(data.message);
-        alert("Failed to update profile");
+        setError(data.message || "Failed to update profile");
       }
     } catch (error) {
       console.error("Error:", error);
-      setError("Server error");
-      alert("Failed to update profile");
+      setError("Server error during save");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleCancel = () => {
-    if (profile) {
-      setDisplayName(profile.profile?.displayName || "");
-      setAboutMe(profile.profile?.aboutMe || "");
-    }
-    setEditMode(false);
-    setError("");
-  };
-
   const handleDeleteAccount = async () => {
-    if (!window.confirm("Are you sure? This cannot be undone!")) {
-      return;
-    }
+    if (!window.confirm("Are you sure? This cannot be undone!")) return;
 
     try {
       const token = localStorage.getItem("token");
-
       const res = await fetch("http://localhost:5000/api/auth/delete", {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await res.json();
-
       if (data.success) {
         alert("Account deleted successfully");
         localStorage.clear();
         window.location.href = "/";
       } else {
-        alert("Failed to delete account");
+        alert(data.message);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -143,13 +129,13 @@ const Profile = () => {
     }
   };
 
-  if (loading) {
-    return <div className="loading">Loading...</div>;
-  }
+  if (loading) return <div className="loading">Loading...</div>;
+  if (!profile)
+    return <div className="error">{error || "Failed to load profile"}</div>;
 
-  if (!profile) {
-    return <div className="error">Failed to load profile</div>;
-  }
+  const displayEmail = profile.user?.email || "";
+  const displayParams = profile.profile || {};
+  const currentDisplayName = displayParams.displayName || "Anonymous";
 
   return (
     <div className="profileWrapper">
@@ -174,7 +160,8 @@ const Profile = () => {
           </button>
           <div className="userProfile">
             <User size={20} />
-            <span>{displayName || "User"}</span>
+
+            <span>{currentDisplayName}</span>
           </div>
         </div>
       </nav>
@@ -195,13 +182,13 @@ const Profile = () => {
             <div className="avatarSection">
               <div className="avatarCircle">
                 <User size={48} color="#666" />
-                <div className="levelBadge">{profile.profile?.level || 1}</div>
+                <div className="levelBadge">{displayParams.level || 1}</div>
               </div>
               <div className="avatarInfo">
-                <h3 className="userName">{displayName || "Anonymous"}</h3>
+                <h3 className="userName">{currentDisplayName}</h3>
                 <p className="userStats">
-                  Level {profile.profile?.level || 1} •{" "}
-                  {profile.profile?.totalHours || 0} hours donated
+                  Level {displayParams.level || 1} •{" "}
+                  {displayParams.totalHours || 0} hours donated
                 </p>
               </div>
             </div>
@@ -213,8 +200,10 @@ const Profile = () => {
                   <input
                     type="text"
                     className="profileInput"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
+                    value={editMode ? formData.displayName : currentDisplayName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, displayName: e.target.value })
+                    }
                     disabled={!editMode}
                     placeholder="Enter your display name"
                   />
@@ -224,7 +213,7 @@ const Profile = () => {
                   <input
                     type="email"
                     className="profileInput"
-                    value={email}
+                    value={displayEmail}
                     disabled
                     style={{
                       backgroundColor: "#f5f5f5",
@@ -241,8 +230,12 @@ const Profile = () => {
                 <label className="profileLabel">About me</label>
                 <textarea
                   className="profileTextarea"
-                  value={aboutMe}
-                  onChange={(e) => setAboutMe(e.target.value)}
+                  value={
+                    editMode ? formData.aboutMe : displayParams.aboutMe || ""
+                  }
+                  onChange={(e) =>
+                    setFormData({ ...formData, aboutMe: e.target.value })
+                  }
                   disabled={!editMode}
                   rows={4}
                   placeholder="Tell us about yourself..."
@@ -289,7 +282,7 @@ const Profile = () => {
             </div>
             <button
               className="updatePasswordBtn"
-              onClick={() => alert("Password update coming soon!")}
+              onClick={() => alert("Coming soon!")}
             >
               Update password
             </button>
@@ -306,7 +299,6 @@ const Profile = () => {
           <button className="deleteBtn" onClick={handleDeleteAccount}>
             Delete my account
           </button>
-
           <button
             className="logoutBtn"
             onClick={() => {

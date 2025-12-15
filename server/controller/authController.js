@@ -3,26 +3,26 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Volunteer = require("../models/Volunteer");
 const Organization = require("../models/Organization");
-const nodemailer = require("nodemailer");
 
 const validatePassword = (password) => {
   const errors = [];
   if (password.length < 6)
     errors.push("Password must be at least 6 characters");
-
   if (!/[0-9]/.test(password)) errors.push("Must contain number");
-
   return errors;
 };
 
 const register = async (req, res) => {
-  const { email, password, userType, displayName } = req.body;
+  // CHANGED: Added 'username' to the extracted values
+  const { email, password, userType, username, displayName } = req.body;
+
   try {
+    // 1. Check if user exists
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: "User already exists" });
 
+    // 2. Validate Password
     const passwordErrors = validatePassword(password);
-
     if (passwordErrors.length > 0) {
       return res.status(400).json({
         success: false,
@@ -31,43 +31,53 @@ const register = async (req, res) => {
       });
     }
 
+    // 3. Create Base User
     const passwordHash = await bcrypt.hash(password, 10);
-
-    // Create the user
     user = new User({ email, passwordHash, userType });
     await user.save();
 
-    // make profile based on userType
-    if (userType === "volunteer") {
-      const volunteerProfile = new Volunteer({
-        userId: user._id,
-        displayName: displayName || "",
-      });
-      await volunteerProfile.save();
-    } else if (userType === "organization") {
-      const organizationProfile = new Organization({
-        userId: user._id,
-        organizationName: displayName || "",
-      });
-      await organizationProfile.save();
+    // 4. Create Profile
+    // CHANGED: We now prioritize 'username' (from your form), then 'displayName', then the default.
+    const nameToUse =
+      username ||
+      displayName ||
+      (userType === "volunteer" ? "Volunteer" : "Organization");
+
+    try {
+      if (userType === "volunteer") {
+        await Volunteer.create({
+          userId: user._id,
+          displayName: nameToUse, // Now uses the input username
+        });
+      } else if (userType === "organization") {
+        await Organization.create({
+          userId: user._id,
+          organizationName: nameToUse, // Now uses the input username
+        });
+      }
+    } catch (profileError) {
+      console.error("Profile creation warning:", profileError.message);
     }
 
+    // 5. Generate Token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
     res.status(201).json({
+      success: true,
       message: "User registered successfully",
       token,
       user: {
+        id: user._id,
         email,
         userType,
-        displayName,
+        displayName: nameToUse, // Send back the correct name
       },
     });
   } catch (err) {
     console.error("Registration error:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Server error during registration" });
   }
 };
 
@@ -118,66 +128,11 @@ const logout = async (req, res) => {
   });
 };
 
-const getCurrentUser = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select("-passwordHash");
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    let profile = null;
-
-    if (user.userType === "volunteer") {
-      profile = await Volunteer.findOne({ userId: user._id });
-    } else if (user.userType === "organization") {
-      profile = await Organization.findOne({ userId: user._id });
-    }
-
-    res.json({
-      success: true,
-      data: {
-        user: {
-          id: user._id,
-          email: user.email,
-          userType: user.userType,
-          createdAt: user.createdAt,
-        },
-        profile,
-      },
-    });
-  } catch (error) {
-    console.error("Get user error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
-  }
-};
-
 const deleteAccount = async (req, res) => {
   try {
     const userId = req.user.id;
-
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    if (user.userType === "volunteer") {
-      await Volunteer.deleteOne({ userId: user._id });
-    } else if (user.userType === "organization") {
-      await Organization.deleteOne({ userId: user._id });
-    }
-
+    await Volunteer.deleteOne({ userId });
+    await Organization.deleteOne({ userId });
     await User.findByIdAndDelete(userId);
 
     res.status(200).json({
@@ -194,4 +149,4 @@ const deleteAccount = async (req, res) => {
   }
 };
 
-module.exports = { register, login, logout, getCurrentUser, deleteAccount };
+module.exports = { register, login, logout, deleteAccount };
