@@ -3,101 +3,139 @@ import { User, Bell } from "lucide-react";
 import "../style/Profile.css";
 
 const Profile = () => {
-  const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
-  const [location, setLocation] = useState("");
-  const [preferredCauses, setPreferredCauses] = useState("");
-  const [aboutMe, setAboutMe] = useState("");
-  const [emailReminders, setEmailReminders] = useState(true);
-  const [levelUpdates, setLevelUpdates] = useState(true);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [editMode, setEditMode] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const [formData, setFormData] = useState({
+    displayName: "",
+    aboutMe: "",
+  });
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/user/profile")
-      .then((res) => res.json())
-      .then((data) => {
-        setDisplayName(data.displayName || "Brad Pitt");
-        setEmail(data.email || "f1moviecameo@example.com");
-        setLocation(data.location || "San Francisco, CA");
-        setPreferredCauses(
-          data.preferredCauses || "Environment, Youth & Education"
-        );
-        setAboutMe(
-          data.aboutMe ||
-            "I love hands-on projects that bring neighbors together..."
-        );
-        setEmailReminders(data.emailReminders ?? true);
-        setLevelUpdates(data.levelUpdates ?? true);
-      })
-      .catch((err) => console.error("Error fetching profile:", err));
+    fetchProfile();
   }, []);
 
-  // Save changes to backend
-  const handleSave = async (e) => {
-    e.preventDefault();
+  const fetchProfile = async () => {
     try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        window.location.href = "/login";
+        return;
+      }
+
       const res = await fetch("http://localhost:5000/api/user/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          displayName,
-          email,
-          location,
-          preferredCauses,
-          aboutMe,
-          emailReminders,
-          levelUpdates,
-        }),
+        headers: { Authorization: `Bearer ${token}` },
       });
-      if (res.ok) alert("Changes saved successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Error saving changes");
+
+      const data = await res.json();
+
+      if (data.success) {
+        setProfile(data.data);
+      } else {
+        setError(data.message || "Failed to load profile");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setError("Failed to load profile");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleEdit = (e) => {
+    e.preventDefault();
+    if (profile?.profile) {
+      setFormData({
+        displayName: profile.profile.displayName || "",
+        aboutMe: profile.profile.aboutMe || "",
+      });
+    }
+    setEditMode(true);
   };
 
   const handleCancel = () => {
-    setDisplayName("Brad Pitt");
-    setEmail("f1moviecameo@example.com");
-    setLocation("San Francisco, CA");
-    setPreferredCauses("Environment, Youth & Education");
-    setAboutMe("I love hands-on projects that bring neighbors together...");
+    setEditMode(false);
+    setError("");
   };
 
-  const handleUpdatePassword = async () => {
-    alert("Password update functionality (connect to backend)");
+  const handleSave = async (e) => {
+    e.preventDefault();
+
+    if (!editMode) return;
+    setSaving(true);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        "http://localhost:5000/api/user/profile/volunteer",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        setProfile((prev) => ({
+          ...prev,
+          profile: data.data,
+        }));
+        setEditMode(false);
+        alert("Profile updated successfully!");
+      } else {
+        setError(data.message || "Failed to update profile");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setError("Server error during save");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDeleteAccount = async () => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
-      )
-    ) {
-      try {
-        const token = localStorage.getItem("token");
+    if (!window.confirm("Are you sure? This cannot be undone!")) return;
 
-        const res = await fetch("http://localhost:5000/api/auth/delete", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:5000/api/auth/delete", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        if (res.ok) {
-          alert("Account deleted successfully!");
-          window.location.href = "/";
-        } else {
-          const data = await res.json();
-          console.log("Error:", data);
-          alert("Failed to delete account");
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Error deleting account");
+      const data = await res.json();
+      if (data.success) {
+        alert("Account deleted successfully");
+        localStorage.clear();
+        window.location.href = "/";
+      } else {
+        alert(data.message);
       }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Server error");
     }
   };
+
+  if (loading) return <div className="loading">Loading...</div>;
+  if (!profile)
+    return <div className="error">{error || "Failed to load profile"}</div>;
+
+  const displayEmail = profile.user?.email || "";
+  const displayParams = profile.profile || {};
+  const currentDisplayName = displayParams.displayName || "Anonymous";
 
   return (
     <div className="profileWrapper">
@@ -122,7 +160,8 @@ const Profile = () => {
           </button>
           <div className="userProfile">
             <User size={20} />
-            <span>{displayName}</span>
+
+            <span>{currentDisplayName}</span>
           </div>
         </div>
       </nav>
@@ -136,19 +175,21 @@ const Profile = () => {
           </p>
         </div>
 
+        {error && <div className="error">{error}</div>}
+
         <div className="profileCard">
           <div className="profileSection">
             <div className="avatarSection">
               <div className="avatarCircle">
                 <User size={48} color="#666" />
-                <div className="levelBadge">1</div>
+                <div className="levelBadge">{displayParams.level || 1}</div>
               </div>
               <div className="avatarInfo">
-                <h3 className="userName">{displayName}</h3>
-                <p className="userStats">Level 1 • 0 hours donated</p>
-                <a href="#" className="changeAvatarLink">
-                  Change avatar
-                </a>
+                <h3 className="userName">{currentDisplayName}</h3>
+                <p className="userStats">
+                  Level {displayParams.level || 1} •{" "}
+                  {displayParams.totalHours || 0} hours donated
+                </p>
               </div>
             </div>
 
@@ -159,8 +200,12 @@ const Profile = () => {
                   <input
                     type="text"
                     className="profileInput"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
+                    value={editMode ? formData.displayName : currentDisplayName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, displayName: e.target.value })
+                    }
+                    disabled={!editMode}
+                    placeholder="Enter your display name"
                   />
                 </div>
                 <div className="formGroup">
@@ -168,30 +213,16 @@ const Profile = () => {
                   <input
                     type="email"
                     className="profileInput"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={displayEmail}
+                    disabled
+                    style={{
+                      backgroundColor: "#f5f5f5",
+                      cursor: "not-allowed",
+                    }}
                   />
-                </div>
-              </div>
-
-              <div className="formRow">
-                <div className="formGroup">
-                  <label className="profileLabel">Location</label>
-                  <input
-                    type="text"
-                    className="profileInput"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                  />
-                </div>
-                <div className="formGroup">
-                  <label className="profileLabel">Preferred causes</label>
-                  <input
-                    type="text"
-                    className="profileInput"
-                    value={preferredCauses}
-                    onChange={(e) => setPreferredCauses(e.target.value)}
-                  />
+                  <small style={{ color: "#666", fontSize: "12px" }}>
+                    Email cannot be changed
+                  </small>
                 </div>
               </div>
 
@@ -199,89 +230,84 @@ const Profile = () => {
                 <label className="profileLabel">About me</label>
                 <textarea
                   className="profileTextarea"
-                  value={aboutMe}
-                  onChange={(e) => setAboutMe(e.target.value)}
+                  value={
+                    editMode ? formData.aboutMe : displayParams.aboutMe || ""
+                  }
+                  onChange={(e) =>
+                    setFormData({ ...formData, aboutMe: e.target.value })
+                  }
+                  disabled={!editMode}
                   rows={4}
+                  placeholder="Tell us about yourself..."
                 />
               </div>
 
               <div className="buttonGroup">
-                <button type="submit" className="saveBtn">
-                  Save changes
-                </button>
-                <button
-                  type="button"
-                  className="cancelBtn"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </button>
+                {!editMode ? (
+                  <button
+                    type="button"
+                    className="saveBtn"
+                    onClick={handleEdit}
+                  >
+                    Edit Profile
+                  </button>
+                ) : (
+                  <>
+                    <button type="submit" className="saveBtn" disabled={saving}>
+                      {saving ? "Saving..." : "Save Changes"}
+                    </button>
+                    <button
+                      type="button"
+                      className="cancelBtn"
+                      onClick={handleCancel}
+                      disabled={saving}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )}
               </div>
             </form>
           </div>
         </div>
+      </div>
 
-        <div className="profileCard">
-          <div className="accountSettings">
-            <h3 className="sectionTitle">Account settings</h3>
-            <div className="settingsRow">
-              <div>
-                <p className="settingsLabel">Change password</p>
-                <p className="passwordDots">•••••••</p>
-              </div>
-              <button
-                className="updatePasswordBtn"
-                onClick={handleUpdatePassword}
-              >
-                Update password
-              </button>
+      <div className="profileCard">
+        <div className="accountSettings">
+          <h3 className="sectionTitle">Account settings</h3>
+          <div className="settingsRow">
+            <div>
+              <p className="settingsLabel">Change password</p>
+              <p className="passwordDots">•••••••</p>
             </div>
-          </div>
-        </div>
-
-        <div className="profileCard">
-          <div className="notificationsSection">
-            <h3 className="sectionTitle">Notifications</h3>
-            <label className="checkboxLabel">
-              <input
-                type="checkbox"
-                className="checkbox"
-                checked={emailReminders}
-                onChange={(e) => setEmailReminders(e.target.checked)}
-              />
-              <span>Email reminders for approval for signed up events</span>
-            </label>
-            <label className="checkboxLabel">
-              <input
-                type="checkbox"
-                className="checkbox"
-                checked={levelUpdates}
-                onChange={(e) => setLevelUpdates(e.target.checked)}
-              />
-              <span>Level up & badge updates</span>
-            </label>
-          </div>
-        </div>
-        <div className="dangerCard">
-          <h3 className="dangerTitle">Danger zone</h3>
-          <p className="dangerText">
-            These actions are permanent and cannot be undone.
-          </p>
-          <div className="dangerButtons">
-            <button className="deleteBtn" onClick={handleDeleteAccount}>
-              Delete my account
-            </button>
-
             <button
-              className="logoutBtn"
-              onClick={() => {
-                localStorage.clear();
-                window.location.href = "/";
-              }}
+              className="updatePasswordBtn"
+              onClick={() => alert("Coming soon!")}
             >
-              Logout
+              Update password
             </button>
           </div>
+        </div>
+      </div>
+
+      <div className="dangerCard">
+        <h3 className="dangerTitle">Danger zone</h3>
+        <p className="dangerText">
+          These actions are permanent and cannot be undone.
+        </p>
+        <div className="dangerButtons">
+          <button className="deleteBtn" onClick={handleDeleteAccount}>
+            Delete my account
+          </button>
+          <button
+            className="logoutBtn"
+            onClick={() => {
+              localStorage.clear();
+              window.location.href = "/";
+            }}
+          >
+            Logout
+          </button>
         </div>
       </div>
     </div>
