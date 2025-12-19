@@ -5,7 +5,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 const Register = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  // Default to volunteer if not specified
   const userType = location.state?.userType || "volunteer";
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,18 +50,23 @@ const Register = () => {
       if (res.ok) {
         localStorage.setItem("token", data.token);
         alert("Register successful!");
-        navigate("/");
+
+        navigate("/profile");
       } else {
-        setSubmitError("Email already exists. Please log in.");
+        setSubmitError(
+          data.message || "Registration failed. Please try again."
+        );
       }
     } catch (error) {
       console.error("Signup error:", error);
       setSubmitError("Server error. Please try again.");
     }
   };
+
   const handleGoogleSignIn = () => {
     window.location.href = `http://localhost:5000/api/auth/google?userType=${userType}`;
   };
+
   return (
     <div className="wrapper">
       <div className="leftSection">
@@ -123,7 +130,7 @@ const Register = () => {
                 setSubmitError("");
               }}
             />
-            {/*  error message */}
+            {/* error message */}
             {passwordError && <p className="error-message">{passwordError}</p>}
             {submitError && <p className="error-message">{submitError}</p>}
 
@@ -133,7 +140,7 @@ const Register = () => {
                 Already have an account?
                 <b
                   style={{ cursor: "pointer", color: "#007bff" }}
-                  onClick={() => (window.location.href = "/")}
+                  onClick={() => navigate("/login")}
                 >
                   {" "}
                   Sign In

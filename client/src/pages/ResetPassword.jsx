@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import "../style/ResetPassword.css";
 
@@ -119,7 +120,7 @@ function ResetPassword() {
                 onClick={() => setShowNewPassword(!showNewPassword)}
                 tabIndex="-1"
               >
-                {showNewPassword ? "👁️" : "👁️‍🗨️"}
+                {showNewPassword ? <FaEye /> : <FaEyeSlash />}
               </button>
             </div>
           </div>
@@ -140,7 +141,7 @@ function ResetPassword() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 tabIndex="-1"
               >
-                {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
+                {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
               </button>
             </div>
           </div>

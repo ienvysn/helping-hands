@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../style/Login.css";
-import { useNavigate, useLocation } from "react-router-dom";
-import "../style/Login.css";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -9,9 +8,19 @@ const Login = () => {
   const [submitError, setSubmitError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  // Check for errors returned from Google Auth
+  useEffect(() => {
+    const errorMsg = searchParams.get("error");
+    if (errorMsg) {
+      setSubmitError(decodeURIComponent(errorMsg));
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError("");
 
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
@@ -24,6 +33,7 @@ const Login = () => {
 
       if (res.ok) {
         localStorage.setItem("token", data.data.token);
+
         navigate("/profile");
       } else {
         setSubmitError(data.message || "Login failed");
@@ -33,9 +43,11 @@ const Login = () => {
       setSubmitError("Server not responding");
     }
   };
+
   const handleGoogleSignIn = () => {
     window.location.href = `http://localhost:5000/api/auth/google?userType=volunteer`;
   };
+
   return (
     <div className="wrapper">
       <div className="leftSection">
@@ -82,6 +94,7 @@ const Login = () => {
               required
             />
             {submitError && <p className="error-message">{submitError}</p>}
+
             <div className="linksRow">
               <span>
                 Don't have an account?
