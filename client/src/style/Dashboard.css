@@ -3,20 +3,18 @@
   background-color: #e8eef5;
 }
 
-/* Content */
 .dashboardContent {
   max-width: 1500px;
   margin: 2rem auto;
   padding: 2rem;
 }
 
-/* Summary Card */
 .summaryCard {
   background: white;
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .summaryLeft {
@@ -35,7 +33,6 @@
   color: #666;
 }
 
-/* Stats */
 .summaryStats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -72,7 +69,6 @@
   font-weight: 700;
 }
 
-/* Progress */
 .progressSection {
   margin-top: 2rem;
 }
@@ -97,61 +93,81 @@
   border-radius: 4px;
 }
 
-/* Achievement */
 .achievementCard {
-  background: #1e3a5f;
+  background: #0f1f40;
   color: white;
   border-radius: 14px;
   padding: 2rem;
   margin-bottom: 2rem;
 }
 
-.sectionSubtitle {
+.achievementCard .sectionTitle {
+  color: white !important;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.achievementCard .sectionSubtitle {
+  color: white;
   font-size: 0.9rem;
-  opacity: 0.85;
+  opacity: 0.8;
   margin-bottom: 1.5rem;
 }
 
 .achievementLevels {
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .achievementItem {
-  width: 120px;
-  background: #4f8cc9;
-  padding: 1rem;
-  border-radius: 12px;
+  flex: 1;
+  min-width: 100px;
+  background: #4c78b0;
+  padding: 1.5rem;
+  border-radius: 14px;
   text-align: center;
+  position: relative;
+  color: white;
+  cursor: default;
+  transition: all 0.3s ease;
 }
 
 .achievementItem svg {
-  margin-bottom: 0.5rem;
+  display: block;
+  margin: 0 auto 0.5rem;
 }
 
-.achievementItem.active {
-  background: #93c5fd;
-  color: #1e3a5f;
-}
-
+.achievementItem.active,
 .achievementItem.highlight {
-  background: #fde047;
-  color: #1a1a1a;
+  background: #4c78b0;
 }
 
 .achievementItem.locked {
-  opacity: 0.6;
+  background: #2a3d66;
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: rgba(255, 255, 255, 0.5);
 }
 
-/* Upcoming */
+.achievementItem span {
+  display: block;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  color: white;
+}
+
+.achievementItem::after {
+  content: none;
+}
+
 .emptyText {
   text-align: center;
   color: #666;
   margin-top: 1rem;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .summaryStats {
     grid-template-columns: 1fr;
@@ -159,5 +175,10 @@
 
   .achievementLevels {
     justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .achievementItem {
+    flex: 0 0 100px;
   }
 }

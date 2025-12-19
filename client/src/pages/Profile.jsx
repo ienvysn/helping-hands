@@ -41,18 +41,23 @@ const Profile = () => {
             return res.json();
         })
         .then((data) => {
+            // Handle nested response structure from server
+            const userData = data.data?.user || {};
+            const profileData = data.data?.profile || {};
+            
             // Populate all state variables with fetched data
-            setDisplayName(data.displayName || data.email.split('@')[0]);
-            setEmail(data.email || "");
-            setLocation(data.location || "");
-            setPreferredCauses(data.preferredCauses || "");
-            setAboutMe(data.aboutMe || "");
-            setEmailReminders(data.emailReminders ?? true);
-            setLevelUpdates(data.levelUpdates ?? true);
+            const email = userData.email || "";
+            setDisplayName(profileData.displayName || email.split('@')[0] || "User");
+            setEmail(email);
+            setLocation(profileData.location || "");
+            setPreferredCauses(profileData.preferredCauses || "");
+            setAboutMe(profileData.aboutMe || "");
+            setEmailReminders(profileData.emailReminders ?? true);
+            setLevelUpdates(profileData.levelUpdates ?? true);
             
             // ADDED: Set volunteer stats state
-            setTotalHours(data.totalHours || 0); 
-            setLevel(data.level || 1);          
+            setTotalHours(profileData.totalHours || 0); 
+            setLevel(profileData.level || 1);          
         })
         .catch((err) => {
             console.error("Error fetching profile:", err);
