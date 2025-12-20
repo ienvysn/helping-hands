@@ -14,7 +14,8 @@ const Profile = () => {
     
     // ADDED: State for volunteer statistics (Level and Hours)
     const [totalHours, setTotalHours] = useState(0);
-    const [level, setLevel] = useState(1); 
+    const [level, setLevel] = useState(1);
+    const [userType, setUserType] = useState(""); 
 
     // --- Data Fetch (GET) ---
     useEffect(() => {
@@ -54,6 +55,7 @@ const Profile = () => {
             setAboutMe(profileData.aboutMe || "");
             setEmailReminders(profileData.emailReminders ?? true);
             setLevelUpdates(profileData.levelUpdates ?? true);
+            setUserType(userData.userType || "");
             
             // ADDED: Set volunteer stats state
             setTotalHours(profileData.totalHours || 0); 
@@ -75,7 +77,12 @@ const Profile = () => {
         const token = localStorage.getItem("token"); 
 
         try {
-            const res = await fetch("http://localhost:5000/api/user/profile", {
+            // Determine the correct endpoint based on user type
+            const endpoint = userType === "volunteer" 
+                ? "http://localhost:5000/api/user/profile/volunteer"
+                : "http://localhost:5000/api/user/profile/organization";
+
+            const res = await fetch(endpoint, {
                 method: "PUT",
                 headers: { 
                     "Content-Type": "application/json",
@@ -83,12 +90,7 @@ const Profile = () => {
                 },
                 body: JSON.stringify({
                     displayName,
-                    email,
-                    location,
-                    preferredCauses,
                     aboutMe,
-                    emailReminders,
-                    levelUpdates,
                 }),
             });
             
@@ -341,3 +343,5 @@ const Profile = () => {
 };
 
 export default Profile;
+
+//profile.jsx
