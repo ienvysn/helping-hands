@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { User, Bell } from "lucide-react";
 import "../style/Profile.css";
+import { Navigate, Link } from "react-router-dom";
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -143,9 +144,9 @@ const Profile = () => {
         <div className="navLeft">
           <h1 className="navLogo">helpinghands</h1>
           <div className="navMenu">
-            <a href="#" className="navLink">
+            <Link to="/dashboard" className="navLink">
               <span className="navIcon">▦</span> Dashboard
-            </a>
+            </Link>
             <a href="#" className="navLink">
               <span className="navIcon">✦</span> Opportunities
             </a>

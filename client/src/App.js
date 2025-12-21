@@ -5,7 +5,8 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgetPassword";
 import AuthCallback from "./pages/AuthCallback";
 import ResetPassword from "./pages/ResetPassword";
-import Profile from "./pages/Profile";
+import Profile from "./pages/VolunteerProfile";
+import VolDashboard from "./pages/VolunteerDashbaord";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/dashboard" element={<VolDashboard />} />
 
         <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
