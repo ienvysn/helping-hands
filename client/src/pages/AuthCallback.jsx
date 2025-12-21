@@ -7,22 +7,21 @@ const AuthCallback = () => {
 
   useEffect(() => {
     const token = searchParams.get("token");
-    const userType = searchParams.get("userType");
     const error = searchParams.get("error");
 
     if (error) {
-      alert("Google authentication failed. Please try again.");
-      navigate("/login");
+      console.error("Google Auth Error:", error);
+
+      navigate(`/login?error=${encodeURIComponent(error)}`);
       return;
     }
 
     if (token) {
       localStorage.setItem("token", token);
 
-      navigate("/");
+      navigate("/profile");
     } else {
-      alert("Authentication failed - no token received");
-      navigate("/login");
+      navigate("/login?error=Authentication failed");
     }
   }, [searchParams, navigate]);
 
@@ -35,10 +34,24 @@ const AuthCallback = () => {
         height: "100vh",
         flexDirection: "column",
         gap: "1rem",
+        fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ fontSize: "1.2rem" }}>Authenticating with Google...</div>
-      <div>Please wait...</div>
+      <div
+        className="loading-spinner"
+        style={{
+          border: "4px solid #f3f3f3",
+          borderTop: "4px solid #3498db",
+          borderRadius: "50%",
+          width: "40px",
+          height: "40px",
+          animation: "spin 1s linear infinite",
+        }}
+      ></div>
+      <div style={{ fontSize: "1.2rem" }}>Finalizing secure login...</div>
+      <style>
+        {`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}
+      </style>
     </div>
   );
 };
