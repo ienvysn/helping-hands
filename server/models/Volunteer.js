@@ -28,6 +28,11 @@ const volunteerProfileSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
+    completed: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   {
     timestamps: true,
@@ -42,5 +47,7 @@ volunteerProfileSchema.virtual("level").get(function () {
   if (this.totalHours < 200) return 5;
   return Math.floor(this.totalHours / 100) + 4;
 });
+volunteerProfileSchema.set('toJSON', { virtuals: true });
+volunteerProfileSchema.set('toObject', { virtuals: true });
 
 module.exports = mongoose.model("VolunteerProfile", volunteerProfileSchema);

@@ -25,6 +25,39 @@ const userSchema = new mongoose.Schema(
       enum: ["volunteer", "organization"],
       required: true,
     },
+    
+    profile: {
+      displayName: {
+        type: String,
+        default: '',
+      },
+      level: {
+        type: Number,
+        default: 1,
+        min: 1,
+        max: 5,
+      },
+      totalHours: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      completed: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      bio: {
+        type: String,
+        default: '',
+        maxlength: 500,
+      },
+      avatar: {
+        type: String,
+        default: '',
+      },
+    },
+    
     resetPasswordToken: String,
     resetPasswordExpiry: Date,
   },

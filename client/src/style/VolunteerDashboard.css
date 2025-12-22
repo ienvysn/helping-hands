@@ -146,9 +146,11 @@
 
 /* Upcoming */
 .emptyText {
+  color: #374151;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
   text-align: center;
-  color: #666;
-  margin-top: 1rem;
 }
 
 /* Responsive */
@@ -160,4 +162,188 @@
   .achievementLevels {
     justify-content: center;
   }
+} 
+
+
+.progressSubtext {
+  text-align: center;
+  font-size: 13px;
+  color: #6B7280;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+/* Profile Card - NEW */
+.profileCard {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Section Title - NEW */
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+/* Empty State - NEW */
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+
+
+.emptySubtext {
+  color: #6B7280;
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.browseBtn {
+  background: #4F46E5;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.browseBtn:hover {
+  background: #4338CA;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.browseBtn:active {
+  transform: translateY(0);
+}
+
+/* Events Loading - NEW */
+.eventsLoading {
+  text-align: center;
+  padding: 40px;
+  color: #6B7280;
+  font-size: 14px;
+}
+
+/* Events List - NEW */
+.eventsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.eventCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #F9FAFB;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  transition: all 0.3s ease;
+}
+
+.eventCard:hover {
+  border-color: #4F46E5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.eventDate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 8px;
+  padding: 12px 16px;
+  min-width: 70px;
+  border: 2px solid #4F46E5;
+}
+
+.eventDay {
+  font-size: 28px;
+  font-weight: 700;
+  color: #4F46E5;
+  line-height: 1;
+}
+
+.eventMonth {
+  font-size: 12px;
+  color: #6B7280;
+  font-weight: 600;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+.eventDetails {
+  flex: 1;
+}
+
+.eventTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.eventInfo {
+  font-size: 14px;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.eventInfo span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.eventTime {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #4F46E5;
+  font-weight: 500;
+}
+
+.eventViewBtn {
+  background: white;
+  color: #4F46E5;
+  border: 2px solid #4F46E5;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.eventViewBtn:hover {
+  background: #4F46E5;
+  color: white;
+  transform: translateX(2px);
 }

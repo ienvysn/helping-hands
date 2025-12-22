@@ -27,6 +27,10 @@ const getProfile = async (req, res) => {
           displayName: "Volunteer",
         });
       }
+
+      //  ADDED: Convert to object to include virtuals (level calculation)
+      profile = profile.toObject();
+
     } else if (user.userType === "organization") {
       profile = await Organization.findOne({ userId: user._id });
 
