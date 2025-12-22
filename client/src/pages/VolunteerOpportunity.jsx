@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Bell, User, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import "../style/VolunteerOpportunity.css";
 
-/*Opportunity Card Component*/
+
 const OpportunityCard = ({ image, title, date, tags }) => {
   return (
     <div className="opportunityCard">

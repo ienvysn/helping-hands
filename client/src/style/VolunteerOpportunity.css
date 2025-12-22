@@ -240,6 +240,7 @@ section:nth-of-type(2) .sectionTitle {
   align-items: center;
   gap: 0.3rem;
 }
+/*Responsive*/
 
 @media (max-width: 991px) and (min-width: 768px) {
   .opportunityContent {
