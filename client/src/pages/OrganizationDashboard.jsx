@@ -38,10 +38,10 @@ const OrganizationDashboard = () => {
   });
 
   const stats = [
-    { label: 'Event Organized', value: '13', subtext: 'All time', icon: Calendar, color: '#3B82F6' },
-    { label: 'Total Volunteers', value: '4', subtext: 'All time volunteers', icon: Users, color: '#10B981' },
-    { label: 'Total Hours', value: '456', subtext: 'Hours till date', icon: Clock, color: '#F59E0B' },
-    { label: 'Rating', value: '4.3', subtext: 'All time', icon: Star, color: '#EF4444' }
+    { label: 'Event Organized', value: '13',  icon: Calendar, color: '#3B82F6' },
+    { label: 'Total Volunteers', value: '4',  icon: Users, color: '#10B981' },
+    { label: 'Total Hours', value: '456', icon: Clock, color: '#F59E0B' },
+    { label: 'Rating', value: '4.3',  icon: Star, color: '#EF4444' }
   ];
 
   const upcomingEvents = [
