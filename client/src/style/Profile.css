@@ -77,13 +77,14 @@
 }
 
 .profileContent {
-  max-width: 1500px;
+  max-width: 90%;
   margin: 2rem auto;
-  padding: 2rem;
+  padding: 0;
 }
 
 .profileHeader {
   margin-bottom: 2rem;
+  padding: 0 2rem;
 }
 
 .profileTitle {
@@ -105,6 +106,13 @@
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   width: 100%;
+}
+
+/* Cards outside profileContent need max-width */
+.profileWrapper > .profileCard {
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Avatar section */
@@ -260,6 +268,9 @@
   border: 1px solid #fecaca;
   border-radius: 12px;
   padding: 2rem;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .dangerCard h3.dangerTitle {

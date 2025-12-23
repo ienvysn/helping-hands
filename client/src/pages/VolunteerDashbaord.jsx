@@ -1,23 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { User, Bell, Star, Lock, Calendar, Clock, MapPin } from "lucide-react";
 import "../style/VolunteerDashboard.css";
+import { useNavigate, Link } from 'react-router-dom';
 
 const ProfileDashboard = () => {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState([]);
   const [eventsLoading, setEventsLoading] = useState(true);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userType = localStorage.getItem('userType');
+
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    // If logged in as organization, redirect to organization dashboard
+    if (userType === 'organization') {
+      navigate('/organization-dashboard');
+      return;
+    }
+
     fetchDashboardData();
     fetchUpcomingEvents();
-  }, []);
+  }, [navigate]);
 
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        window.location.href = "/login";
+        navigate("/login");
         return;
       }
 
@@ -41,7 +57,6 @@ const ProfileDashboard = () => {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      // Update this endpoint to match your backend
       const res = await fetch("http://localhost:5000/api/events/upcoming", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -73,6 +88,11 @@ const ProfileDashboard = () => {
     });
   };
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
   if (loading) return <div className="loading">Loading...</div>;
   if (!profile) return <div className="error">Failed to load dashboard</div>;
 
@@ -83,7 +103,6 @@ const ProfileDashboard = () => {
   const totalHours = profile.profile?.totalHours || 0;
   const completed = profile.profile?.completed || 0;
 
-  // Calculate next level requirements
   const getNextLevelHours = (currentLevel) => {
     if (currentLevel === 1) return 10;
     if (currentLevel === 2) return 25;
@@ -122,15 +141,15 @@ const ProfileDashboard = () => {
         <div className="navLeft">
           <h1 className="navLogo">helpinghands</h1>
           <div className="navMenu">
-            <a className="navLink">
+            <Link to="/dashboard" className="navLink">
               <span className="navIcon">▦</span> Dashboard
-            </a>
-            <a className="navLink">
+            </Link>
+            <Link to="/opportunities" className="navLink">
               <span className="navIcon">✦</span> Opportunities
-            </a>
-            <a className="navLink">
+            </Link>
+            <Link to="/my-events" className="navLink">
               <span className="navIcon">▥</span> My Events
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -138,7 +157,7 @@ const ProfileDashboard = () => {
           <button className="notificationBtn">
             <Bell size={20} />
           </button>
-          <div className="userProfile">
+          <div className="userProfile" onClick={() => navigate('/profile')}>
             <User size={20} />
             <span>{displayName}</span>
           </div>
@@ -273,7 +292,7 @@ const ProfileDashboard = () => {
                     </div>
                     <button 
                       className="eventViewBtn"
-                      onClick={() => window.location.href = `/event/${event._id || event.id}`}
+                      onClick={() => navigate(`/event/${event._id || event.id}`)}
                     >
                       View Details
                     </button>
@@ -290,7 +309,7 @@ const ProfileDashboard = () => {
               </p>
               <button 
                 className="browseBtn"
-                onClick={() => window.location.href = '/opportunities'}
+                onClick={() => navigate('/opportunities')}
               >
                 Browse Opportunities
               </button>

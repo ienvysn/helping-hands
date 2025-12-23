@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { User, Bell } from "lucide-react";
 import "../style/Profile.css";
-import { Navigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Profile = () => {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
