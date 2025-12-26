@@ -5,7 +5,6 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  
 }
 
 /* Wrapper */
@@ -21,7 +20,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .navLeft {
@@ -77,13 +76,14 @@
 }
 
 .profileContent {
-  max-width: 1500px;
+  max-width: 90%;
   margin: 2rem auto;
-  padding: 2rem;
+  padding: 0;
 }
 
 .profileHeader {
   margin-bottom: 2rem;
+  padding: 0 2rem;
 }
 
 .profileTitle {
@@ -103,10 +103,18 @@
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   width: 100%;
 }
 
+/* Cards outside profileContent need max-width */
+.profileWrapper > .profileCard {
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Avatar section */
 .avatarSection {
   display: flex;
   align-items: center;
@@ -188,7 +196,8 @@
   margin-bottom: 0.5rem;
 }
 
-.profileInput, .profileTextarea {
+.profileInput,
+.profileTextarea {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 1px solid #d1d5db;
@@ -196,10 +205,11 @@
   font-size: 0.95rem;
 }
 
-.profileInput:focus, .profileTextarea:focus {
+.profileInput:focus,
+.profileTextarea:focus {
   outline: none;
   border-color: #4f8cc9;
-  box-shadow: 0 0 0 3px rgba(79,140,201,0.1);
+  box-shadow: 0 0 0 3px rgba(79, 140, 201, 0.1);
 }
 
 .profileTextarea {
@@ -244,14 +254,43 @@
 }
 
 /* Account settings */
-.sectionTitle { font-size: 1.25rem; font-weight: 700; color: #1a1a1a; margin-bottom: 1.5rem; }
-.settingsRow { display: flex; justify-content: space-between; align-items: center; }
-.updatePasswordBtn { padding: 0.5rem 1rem; border: none; background: transparent; color: #4f8cc9; cursor: pointer; }
-.updatePasswordBtn:hover { background-color: #f0f7ff; border-radius: 6px; }
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 1.5rem;
+}
+.settingsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.updatePasswordBtn {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: #4f8cc9;
+  cursor: pointer;
+}
+.updatePasswordBtn:hover {
+  background-color: #f0f7ff;
+  border-radius: 6px;
+}
 
 /* Notifications */
-.checkboxLabel { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; font-size: 0.95rem; cursor: pointer; }
-.checkbox { width: 18px; height: 18px; accent-color: #4f8cc9; }
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #4f8cc9;
+}
 
 /* Danger zone */
 .dangerCard {
@@ -259,6 +298,9 @@
   border: 1px solid #fecaca;
   border-radius: 12px;
   padding: 2rem;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .dangerCard h3.dangerTitle {
@@ -275,7 +317,7 @@
 }
 .dangerButtons {
   display: flex;
-  gap: 1rem; 
+  gap: 1rem;
 }
 
 .deleteBtn {
@@ -312,18 +354,18 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .profileContent { 
-    padding: 1rem; 
+  .profileContent {
+    padding: 1rem;
   }
 
-  .formRow { 
-    grid-template-columns: 1fr; 
-    gap: 1rem; 
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
-  .avatarSection { 
-    flex-direction: column; 
-    align-items: center; 
+  .avatarSection {
+    flex-direction: column;
+    align-items: center;
     text-align: center;
     gap: 1rem;
   }
@@ -347,27 +389,32 @@
     font-size: 0.8rem;
   }
 
-  .settingsRow { 
-    flex-direction: column; 
-    align-items: flex-start; 
-    gap: 1rem; 
+  .settingsRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
 
-  .buttonGroup { 
-    flex-direction: column; 
+  .buttonGroup {
+    flex-direction: column;
   }
 
-  .saveBtn, .cancelBtn, .logoutBtn, .deleteBtn { 
-    width: 100%; 
+  .saveBtn,
+  .cancelBtn,
+  .logoutBtn,
+  .deleteBtn {
+    width: 100%;
   }
 
   .dangerButtons {
     flex-direction: column;
-    gap: 0.75rem; 
+    gap: 0.75rem;
   }
 
   /* Navbar */
-  .navLeft, .navRight, .navMenu {
+  .navLeft,
+  .navRight,
+  .navMenu {
     flex-direction: column;
     gap: 0.5rem;
   }
