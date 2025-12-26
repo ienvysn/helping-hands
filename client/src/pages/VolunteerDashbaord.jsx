@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { User, Bell, Star, Lock } from "lucide-react";
-import "../style/Dashboard.css";
+import "../style/VolunteerDashboard.css";
 
 const ProfileDashboard = () => {
   const [profile, setProfile] = useState(null);
@@ -37,7 +37,7 @@ const ProfileDashboard = () => {
   if (!profile) return <div className="error">Failed to load dashboard</div>;
 
   const displayName = "Brad Pitt";
-const email = "losemymind@gmail.com";
+  const email = "losemymind@gmail.com";
 
   const level = profile.profile?.level || 1;
   const totalHours = profile.profile?.totalHours || 0;
@@ -121,8 +121,8 @@ const email = "losemymind@gmail.com";
         <div className="achievementCard">
           <h3 className="sectionTitle">Achievement Journey</h3>
           <p className="sectionSubtitle">
-            Keep volunteering to unlock higher levels and earn recognition in the
-            community!
+            Keep volunteering to unlock higher levels and earn recognition in
+            the community!
           </p>
 
           <div className="achievementLevels">
