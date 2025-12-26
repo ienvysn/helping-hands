@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Bell, User, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import "../style/VolunteerOpportunity.css";
 
-
 const OpportunityCard = ({ image, title, date, tags }) => {
   return (
     <div className="opportunityCard">
@@ -30,7 +29,6 @@ const OpportunityCard = ({ image, title, date, tags }) => {
 const VolunteerOpportunity = () => {
   const displayName = "Brad Pitt";
 
-  /*Opportunities Data Array*/
   const opportunities = [
     {
       image: "/images/parkcleanup.png",
@@ -67,7 +65,6 @@ const VolunteerOpportunity = () => {
 
   return (
     <div className="dashboardWrapper">
-
       {/*Navbar Section*/}
       <nav className="navbar">
         <div className="navLeft">
@@ -98,7 +95,6 @@ const VolunteerOpportunity = () => {
 
       {/*Page Content*/}
       <div className="opportunityContent">
-
         {/* Search Bar */}
         <div className="searchBar">
           <Search size={18} />
@@ -139,7 +135,11 @@ const VolunteerOpportunity = () => {
             <button
               className="carouselBtn"
               onClick={() =>
-                slideRight(setFeaturedIndex, featuredIndex, opportunities.length)
+                slideRight(
+                  setFeaturedIndex,
+                  featuredIndex,
+                  opportunities.length
+                )
               }
             >
               <ChevronRight />
@@ -177,7 +177,6 @@ const VolunteerOpportunity = () => {
             </button>
           </div>
         </section>
-
       </div>
     </div>
   );
