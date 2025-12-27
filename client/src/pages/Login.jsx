@@ -10,8 +10,7 @@ const Login = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
-    const userType = location.state?.userType || "volunteer";
-
+  const userType = location.state?.userType || "volunteer";
 
   // Check for errors returned from Google Auth
   useEffect(() => {
@@ -29,20 +28,20 @@ const Login = () => {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password ,userType}),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
         localStorage.setItem("token", data.data.token);
-        localStorage.setItem("userType", data.data.userType || userType);
+        localStorage.setItem("userType", data.data.user.userType);
 
-        // Redirect based on user type
-        if (data.data.userType === 'organization' || userType === 'organization') {
+        console.log("Logged in as:", data.data.user.userType);
+
+        if (data.data.user.userType === "organization") {
           navigate("/organization-dashboard");
         } else {
-          // Redirect volunteers to their dashboard
           navigate("/dashboard");
         }
       } else {

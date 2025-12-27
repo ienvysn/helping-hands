@@ -25,7 +25,6 @@ const OpportunityCard = ({ image, title, date, tags }) => {
   );
 };
 
-/*Main Volunteer Opportunity Page*/
 const VolunteerOpportunity = () => {
   const displayName = "Brad Pitt";
 
@@ -65,15 +64,14 @@ const VolunteerOpportunity = () => {
 
   return (
     <div className="dashboardWrapper">
-      {/*Navbar Section*/}
       <nav className="navbar">
         <div className="navLeft">
           <h1 className="navLogo">helpinghands</h1>
           <div className="navMenu">
-            <a className="navLink" href="/dashboard">
+            <a className="navLink">
               <span className="navIcon">▦</span> Dashboard
             </a>
-            <a className="navLink active" href="/opportunities">
+            <a className="navLink active">
               <span className="navIcon">✦</span> Opportunities
             </a>
             <a className="navLink" href="/myevents">

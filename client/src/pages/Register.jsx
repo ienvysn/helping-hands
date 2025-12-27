@@ -8,7 +8,7 @@ const Register = () => {
   // Default to volunteer if not specified
   const userType = location.state?.userType || "volunteer";
 
-  const [username, setUsername] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -41,7 +41,12 @@ const Register = () => {
       const res = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, userType, username }),
+        body: JSON.stringify({
+          email,
+          password,
+          userType,
+          displayName,
+        }),
       });
 
       const data = await res.json();
@@ -50,8 +55,14 @@ const Register = () => {
       if (res.ok) {
         localStorage.setItem("token", data.token);
         alert("Register successful!");
-
-        navigate("/profile");
+        if (
+          data.data.userType === "organization" ||
+          userType === "organization"
+        ) {
+          navigate("/organization-dashboard");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         setSubmitError(
           data.message || "Registration failed. Please try again."
@@ -97,9 +108,9 @@ const Register = () => {
               className="input"
               type="text"
               placeholder="Enter your username"
-              value={username}
+              value={displayName}
               onChange={(e) => {
-                setUsername(e.target.value);
+                setDisplayName(e.target.value);
                 setSubmitError("");
               }}
             />

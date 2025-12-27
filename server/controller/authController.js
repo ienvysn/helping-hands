@@ -35,6 +35,7 @@ const register = async (req, res) => {
     await user.save();
 
     // make profile based on userType
+    console.log("display nae of user ", displayName);
     if (userType === "volunteer") {
       const volunteerProfile = new Volunteer({
         userId: user._id,
