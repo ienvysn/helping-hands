@@ -46,7 +46,7 @@ const OpportunityCard = ({ opportunity }) => {
 };
 
 const VolunteerOpportunity = () => {
-  const [displayName, setDisplayName] = useState("");
+  const [displayName, setDisplayName] = useState("Volunteer");
 
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -74,28 +74,6 @@ const VolunteerOpportunity = () => {
     };
 
     fetchOpportunities();
-  }, []);
-
-  // fetch volunteer profile to show display name
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-        const res = await fetch("http://localhost:5000/api/user/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        if (data.success && data.data) {
-          const displayParams = data.data.profile || {};
-          setDisplayName(displayParams.displayName || data.data.user?.email || "Volunteer");
-        }
-      } catch (err) {
-        console.error("Failed to fetch profile", err);
-      }
-    };
-
-    fetchProfile();
   }, []);
 
   /*Carousel State & Settings*/
