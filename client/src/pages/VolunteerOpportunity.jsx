@@ -1,15 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Bell, User, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import "../style/VolunteerOpportunity.css";
 
-const OpportunityCard = ({ image, title, date, tags }) => {
+const OpportunityCard = ({ opportunity }) => {
+  const org = opportunity.organizationId || {};
+  const eventDate = opportunity.eventDate
+    ? new Date(opportunity.eventDate)
+    : null;
+  const formattedDate = eventDate
+    ? eventDate.toLocaleDateString()
+    : "TBD";
+  const dateTimeStr = `${formattedDate} | ${opportunity.startTime || ""} - ${opportunity.endTime || ""}`;
+
+  const tags = [];
+  if (opportunity.cause) tags.push(opportunity.cause);
+  if (opportunity.durationHours) tags.push(`${opportunity.durationHours}h`);
+
+  const imageSrc = org.logoUrl || opportunity.image || "/images/parkcleanup.png";
+
   return (
     <div className="opportunityCard">
-      <img src={image} alt={title} />
+      <img src={imageSrc} alt={opportunity.title} />
 
       <div className="cardBody">
-        <h4>{title}</h4>
-        <p className="cardDate">{date}</p>
+        <h4>{opportunity.title}</h4>
+        <p className="cardDate">{dateTimeStr}</p>
 
         <div className="tagRow">
           {tags.map((tag, index) => (
@@ -18,6 +33,8 @@ const OpportunityCard = ({ image, title, date, tags }) => {
             </span>
           ))}
         </div>
+
+        {/* organization name intentionally hidden */}
 
         <button className="moreBtn">More →</button>
       </div>
@@ -28,26 +45,33 @@ const OpportunityCard = ({ image, title, date, tags }) => {
 const VolunteerOpportunity = () => {
   const displayName = "Brad Pitt";
 
-  const opportunities = [
-    {
-      image: "/images/parkcleanup.png",
-      title: "Park Clean-up & Tree Planting",
-      date: "Sat, Jun 15 | 9:00 - 12:00 | Jhamsikhel",
-      tags: ["Planting 2h", "Cleaning 1h"],
-    },
-    {
-      image: "/images/dogwalking.png",
-      title: "Weekend Dog Walking",
-      date: "Sun, Jun 18 | 9:00 - 10:00 | Lalitpur",
-      tags: ["Animal 1h"],
-    },
-    {
-      image: "/images/rivercleaning.png",
-      title: "River Cleaning Activity",
-      date: "Sun, Jun 18 | 9:00 - 10:00 | Bagmati River",
-      tags: ["Cleaning 1h"],
-    },
-  ];
+  const [opportunities, setOpportunities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchOpportunities = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/opportunities`);
+        const result = await res.json();
+        if (result.success && result.data && result.data.opportunities) {
+          setOpportunities(result.data.opportunities);
+        } else if (result.success && Array.isArray(result.data)) {
+          setOpportunities(result.data);
+        } else {
+          setOpportunities([]);
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load opportunities");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOpportunities();
+  }, []);
 
   /*Carousel State & Settings*/
   const [featuredIndex, setFeaturedIndex] = useState(0);
@@ -123,10 +147,12 @@ const VolunteerOpportunity = () => {
             </button>
 
             <div className="opportunityGrid">
-              {opportunities
+              {loading && <p>Loading opportunities...</p>}
+              {error && <p>{error}</p>}
+              {!loading && !error && opportunities
                 .slice(featuredIndex, featuredIndex + cardsToShow)
-                .map((item, index) => (
-                  <OpportunityCard key={index} {...item} />
+                .map((item) => (
+                  <OpportunityCard key={item._id} opportunity={item} />
                 ))}
             </div>
 
@@ -158,10 +184,12 @@ const VolunteerOpportunity = () => {
             </button>
 
             <div className="opportunityGrid">
-              {opportunities
+              {loading && <p>Loading opportunities...</p>}
+              {error && <p>{error}</p>}
+              {!loading && !error && opportunities
                 .slice(allIndex, allIndex + cardsToShow)
-                .map((item, index) => (
-                  <OpportunityCard key={index} {...item} />
+                .map((item) => (
+                  <OpportunityCard key={item._id} opportunity={item} />
                 ))}
             </div>
 
