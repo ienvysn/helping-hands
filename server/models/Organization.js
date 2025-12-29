@@ -10,7 +10,7 @@ const organizationProfileSchema = new mongoose.Schema(
     },
     organizationName: {
       type: String,
-      // required: true,
+      required: true,
       trim: true,
     },
     mission: {

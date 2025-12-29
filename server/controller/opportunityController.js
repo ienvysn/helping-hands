@@ -1,5 +1,6 @@
 const Opportunity = require("../models/Opportunity");
 const Organization = require("../models/Organization");
+const Signup = require("../models/SignUp");
 
 const createOpportunity = async (req, res) => {
   try {
@@ -10,7 +11,7 @@ const createOpportunity = async (req, res) => {
       requirements,
       eventDate,
       startTime,
-      endTime,
+
       durationHours,
       opportunityType,
       cause,
@@ -51,7 +52,7 @@ const createOpportunity = async (req, res) => {
       requirements: requirements || "",
       eventDate: eventDateObj,
       startTime: startTime || "",
-      endTime: endTime || "",
+
       durationHours: durationHours || 0,
       opportunityType: opportunityType || "on-site",
       cause: cause || "Other",
@@ -92,7 +93,6 @@ const getAllOpportunities = async (req, res) => {
       limit = 10,
     } = req.query;
 
-    // Build filter query
     const filter = { isActive: true };
 
     // Search by title, description, or tasks
@@ -217,7 +217,7 @@ const updateOpportunity = async (req, res) => {
       requirements,
       eventDate,
       startTime,
-      endTime,
+
       durationHours,
       opportunityType,
       cause,
@@ -251,7 +251,7 @@ const updateOpportunity = async (req, res) => {
     if (requirements !== undefined) opportunity.requirements = requirements;
     if (eventDate !== undefined) opportunity.eventDate = new Date(eventDate);
     if (startTime !== undefined) opportunity.startTime = startTime;
-    if (endTime !== undefined) opportunity.endTime = endTime;
+
     if (durationHours !== undefined) opportunity.durationHours = durationHours;
     if (opportunityType !== undefined)
       opportunity.opportunityType = opportunityType;
@@ -277,7 +277,6 @@ const updateOpportunity = async (req, res) => {
   }
 };
 
-// Delete/Deactivate opportunity (Organization only - must own it)
 const deleteOpportunity = async (req, res) => {
   try {
     const { id } = req.params;
@@ -369,6 +368,177 @@ const getMyOpportunities = async (req, res) => {
   }
 };
 
+const getOpportunitySignups = async (req, res) => {
+  try {
+    const { opportunityId } = req.params;
+
+    const signups = await Signup.find({
+      opportunityId: opportunityId,
+      status: { $in: ["pending", "confirmed"] },
+    })
+      .populate({
+        path: "volunteerId",
+        select: "displayName profilePictureUrl totalHours aboutMe userId",
+        options: { virtuals: true },
+        populate: {
+          path: "userId",
+          select: "email createdAt", // Add email and account creation date
+        },
+      })
+      .sort({ signedUpAt: 1 });
+
+    res.json({
+      success: true,
+      count: signups.length,
+      data: signups,
+    });
+  } catch (error) {
+    console.error("Get signups error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching signups",
+      error: error.message,
+    });
+  }
+};
+
+const confirmAllSignups = async (req, res) => {
+  try {
+    const { opportunityId } = req.params;
+
+    const opportunity = await Opportunity.findById(opportunityId);
+    if (!opportunity) {
+      return res.status(404).json({
+        success: false,
+        message: "Opportunity not found",
+      });
+    }
+
+    const organization = await Organization.findOne({ userId: req.user.id });
+    if (!organization || !opportunity.organizationId.equals(organization._id)) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only confirm in your own opportunities",
+      });
+    }
+
+    const signups = await Signup.find({
+      opportunityId: opportunityId,
+    });
+
+    const result = await Signup.updateMany(
+      { opportunityId, status: "pending" },
+      {
+        $set: {
+          status: "confirmed",
+          confirmedAt: new Date(),
+        },
+      }
+    );
+
+    res.json({
+      success: true,
+      count: result.modifiedCount,
+      data: signups,
+    });
+  } catch (error) {
+    console.error("Get signups error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error confirming all signups",
+      error: error.message,
+    });
+  }
+};
+
+const confirmOneSignup = async (req, res) => {
+  try {
+    const { opportunityId } = req.params;
+    const { volunteerId } = req.body;
+
+    const opportunity = await Opportunity.findById(opportunityId);
+    if (!opportunity) {
+      return res.status(404).json({
+        success: false,
+        message: "Opportunity not found",
+      });
+    }
+
+    const organization = await Organization.findOne({ userId: req.user.id });
+    if (!organization || !opportunity.organizationId.equals(organization._id)) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only confirm in your own opportunities",
+      });
+    }
+
+    const result = await Signup.updateOne(
+      { opportunityId: opportunityId, volunteerId: volunteerId },
+      {
+        $set: {
+          status: "confirmed",
+          confirmedAt: new Date(),
+        },
+      }
+    );
+
+    res.status(200).message(result);
+  } catch (error) {
+    console.error("Get signups error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error confirming signups",
+      error: error.message,
+    });
+  }
+};
+
+const rejectOneSignup = async (req, res) => {
+  try {
+    const { opportunityId } = req.params;
+    const { volunteerId } = req.body;
+
+    const organization = await Organization.findOne({ userId: req.user.id });
+    if (!organization) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const result = await Signup.updateOne(
+      {
+        opportunityId,
+        volunteerId,
+        status: "pending",
+      },
+      {
+        $set: {
+          status: "rejected",
+          rejectedAt: new Date(),
+        },
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Pending signup not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      modifiedCount: result.modifiedCount,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error rejecting signup",
+    });
+  }
+};
+
 module.exports = {
   createOpportunity,
   getAllOpportunities,
@@ -376,4 +546,9 @@ module.exports = {
   updateOpportunity,
   deleteOpportunity,
   getMyOpportunities,
+  getOpportunitySignups,
+  confirmAllSignups,
+  confirmOneSignup,
+
+  rejectOneSignup,
 };
