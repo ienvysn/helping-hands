@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Bell, User, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import "../style/VolunteerOpportunity.css";
 
 //hi
@@ -45,7 +46,7 @@ const OpportunityCard = ({ opportunity }) => {
 };
 
 const VolunteerOpportunity = () => {
-  const displayName = "Brad Pitt";
+  const [displayName, setDisplayName] = useState("");
 
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,6 +76,28 @@ const VolunteerOpportunity = () => {
     fetchOpportunities();
   }, []);
 
+  // fetch volunteer profile to show display name
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const res = await fetch("http://localhost:5000/api/user/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data.success && data.data) {
+          const displayParams = data.data.profile || {};
+          setDisplayName(displayParams.displayName || data.data.user?.email || "Volunteer");
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile", err);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   /*Carousel State & Settings*/
   const [featuredIndex, setFeaturedIndex] = useState(0);
   const [allIndex, setAllIndex] = useState(0);
@@ -94,9 +117,9 @@ const VolunteerOpportunity = () => {
         <div className="navLeft">
           <h1 className="navLogo">helpinghands</h1>
           <div className="navMenu">
-            <a className="navLink">
+            <Link to="/organization-dashboard" className="navLink">
               <span className="navIcon">▦</span> Dashboard
-            </a>
+            </Link>
             <a className="navLink active">
               <span className="navIcon">✦</span> Opportunities
             </a>
@@ -110,10 +133,10 @@ const VolunteerOpportunity = () => {
           <button className="notificationBtn">
             <Bell size={20} />
           </button>
-          <div className="userProfile">
+          <Link to="/profile" className="userProfile">
             <User size={20} />
             <span>{displayName}</span>
-          </div>
+          </Link>
         </div>
       </nav>
 
