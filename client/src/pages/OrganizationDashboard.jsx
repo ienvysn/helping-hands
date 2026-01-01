@@ -38,6 +38,25 @@ const OrganizationDashboard = () => {
     }
 
     setOrganizationName("Brad Pitt");
+
+    // Fetch opportunities from backend
+    const fetchOpportunities = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/opportunities/my/list", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data.success) {
+          setOpportunities(data.data.opportunities);
+        } else {
+          console.error("Failed to fetch opportunities:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching opportunities:", error);
+      }
+    };
+
+    fetchOpportunities();
   }, [navigate]);
 
   const [formData, setFormData] = useState({
@@ -55,42 +74,13 @@ const OrganizationDashboard = () => {
     maxVolunteers: "",
   });
 
+  const [opportunities, setOpportunities] = useState([]);
+
   const stats = [
     { label: "Event Organized", value: "13", icon: Calendar, color: "#3B82F6" },
     { label: "Total Volunteers", value: "4", icon: Users, color: "#10B981" },
     { label: "Total Hours", value: "456", icon: Clock, color: "#F59E0B" },
     { label: "Rating", value: "4.3", icon: Star, color: "#EF4444" },
-  ];
-
-  const upcomingEvents = [
-    {
-      title: "Food Distribution",
-      date: "Mon 22, 10:30-12:00",
-      volunteers: "5/8",
-      status: "Upcoming",
-      views: 134,
-    },
-    {
-      title: "Neighbourhood Cleanup",
-      date: "Mon 25, 09:00-13:00",
-      volunteers: "4/6",
-      status: "Upcoming",
-      views: 89,
-    },
-    {
-      title: "Senior Check-in Calls",
-      date: "Mon 26, 14:00-17:00",
-      volunteers: "3/5",
-      status: "Upcoming",
-      views: 67,
-    },
-    {
-      title: "Volunteer Orientation",
-      date: "Mon 31, 11:00-13:00",
-      volunteers: "2/10",
-      status: "Upcoming",
-      views: 156,
-    },
   ];
 
   const recentActivity = [
@@ -205,6 +195,29 @@ const OrganizationDashboard = () => {
     navigate("/login");
   };
 
+  // DELETE functionality
+  const handleDelete = async (id) => {
+    const token = localStorage.getItem("token");
+    if (!window.confirm("Are you sure you want to delete this opportunity?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/opportunities/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setOpportunities((prev) => prev.filter((op) => op._id !== id));
+        alert("Opportunity deleted successfully!");
+      } else {
+        alert(data.message || "Failed to delete opportunity");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("Server error while deleting opportunity.");
+    }
+  };
+
   return (
     <div className="dashboard-wrapper">
       {/* Navbar */}
@@ -270,20 +283,26 @@ const OrganizationDashboard = () => {
               <button className="filter-tab">Volunteers</button>
             </div>
             <div className="events-list">
-              {upcomingEvents.map((event, idx) => (
-                <div key={idx} className="event-item">
+              {opportunities.map((event) => (
+                <div key={event._id} className="event-item">
                   <div className="event-info">
                     <div className="event-title">{event.title}</div>
-                    <div className="event-date">{event.date}</div>
+                    <div className="event-date">
+                      {new Date(event.eventDate).toLocaleDateString()} {event.startTime}-{event.endTime}
+                    </div>
                   </div>
                   <div className="event-actions">
-                    <span className="event-badge">{event.status}</span>
-                    <span className="event-volunteers">{event.volunteers}</span>
-                    <span className="event-views">{event.views}</span>
+                    <span className="event-badge">{event.isActive ? "Active" : "Inactive"}</span>
+                    <span className="event-volunteers">{event.volunteers || "0"} / {event.maxVolunteers || "∞"}</span>
+                    <span className="event-views">0</span>
                     <button className="icon-action-btn" title="Edit">
                       <Edit size={16} />
                     </button>
-                    <button className="icon-action-btn delete" title="Delete">
+                    <button
+                      className="icon-action-btn delete"
+                      title="Delete"
+                      onClick={() => handleDelete(event._id)}
+                    >
                       <Trash2 size={16} />
                     </button>
                   </div>
