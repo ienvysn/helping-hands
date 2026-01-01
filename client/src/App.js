@@ -8,7 +8,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/VolunteerProfile";
 import VolDashboard from "./pages/VolunteerDashbaord";
 import OrganizationDashboard from "./pages/OrganizationDashboard";
-
+import EventDetail from "./pages/EventDetail";
 import VolunteerOpportunity from "./pages/VolunteerOpportunity";
 
 function App() {
@@ -23,6 +23,8 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/dashboard" element={<VolDashboard />} />
         <Route path="/opportunities" element={<VolunteerOpportunity />} />
+        <Route path="/opportunities/:id" element={<EventDetail />} />
+
         <Route
           path="/organization-dashboard"
           element={<OrganizationDashboard />}

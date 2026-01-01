@@ -1,0 +1,353 @@
+/* Event Detail Page Styles */
+
+.dashboardWrapper {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+/* Navbar */
+.navbar {
+  background: #1e3a5f;
+  padding: 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navLeft {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.navLogo {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.navMenu {
+  display: flex;
+  gap: 2rem;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.navLink:hover {
+  color: white;
+}
+
+.navIcon {
+  font-size: 1rem;
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.notificationBtn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s;
+}
+
+.notificationBtn:hover {
+  opacity: 0.8;
+}
+
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.userProfile:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.userProfile span {
+  font-size: 0.95rem;
+}
+
+.eventDetailContent {
+  max-width: 100%;
+  margin: 0;
+  padding: 2rem 15%;
+  background-color: #f5f7fa;
+}
+
+/* Back Button */
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #1f2937;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s ease;
+}
+
+.backButton:hover {
+  color: #0b3a73;
+}
+
+.backButton span {
+  font-weight: 400;
+}
+
+/* Hero Image */
+.eventHeroImage {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.eventHeroImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Event Header */
+.eventHeader {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.eventTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+}
+
+.eventOrganizer {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 1.25rem 0;
+}
+
+/* Meta Info */
+.eventMetaInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.metaItem svg {
+  color: #9ca3af;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+/* Event Sections */
+.eventSection {
+  background: white;
+  padding: 1rem 1.5rem 1.25rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.625rem 0;
+}
+
+/* Location Map */
+.locationMap {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.locationMap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Description */
+.eventDescription {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #4b5563;
+  margin: 0;
+  white-space: pre-line;
+}
+
+/* Requirements List */
+.requirementsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.requirementsList li {
+  padding: 0.625rem 0;
+  padding-left: 1.25rem;
+  position: relative;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+.requirementsList li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #1f2937;
+  font-size: 1.1rem;
+  font-weight: normal;
+}
+
+/* Sign Up Button */
+.signUpButton {
+  width: 100%;
+  background: #2c5aa0;
+  color: white;
+  border: none;
+  padding: 0.875rem 2rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: none;
+  margin-top: 0;
+}
+
+.signUpButton:hover {
+  background: #234a85;
+}
+
+.signUpButton:active {
+  transform: translateY(1px);
+}
+
+/* Loading and Error States */
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  font-size: 1.1rem;
+  color: #6B7280;
+}
+
+.errorContainer {
+  color: #DC2626;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 1rem;
+  }
+
+  .navMenu {
+    display: none;
+  }
+
+  .eventDetailContent {
+    padding: 1rem 5%;
+  }
+
+  .eventHeader {
+    padding: 1.25rem;
+  }
+
+  .eventTitle {
+    font-size: 1.375rem;
+  }
+
+  .eventSection {
+    padding: 1.25rem;
+  }
+
+  .eventHeroImage {
+    height: 180px;
+  }
+
+  .locationMap {
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .eventDetailContent {
+    padding: 0.75rem 3%;
+  }
+
+  .eventHeader {
+    padding: 1rem;
+  }
+
+  .eventTitle {
+    font-size: 1.25rem;
+  }
+
+  .eventSection {
+    padding: 1rem;
+  }
+
+  .sectionTitle {
+    font-size: 1rem;
+  }
+
+  .eventHeroImage {
+    height: 160px;
+  }
+
+  .signUpButton {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}

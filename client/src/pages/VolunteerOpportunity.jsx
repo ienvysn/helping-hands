@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Bell, User, Search, ChevronLeft, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../style/VolunteerOpportunity.css";
 
-//hi
-
 const OpportunityCard = ({ opportunity }) => {
+  const navigate = useNavigate();
   const org = opportunity.organizationId || {};
   const eventDate = opportunity.eventDate
     ? new Date(opportunity.eventDate)
@@ -19,7 +18,11 @@ const OpportunityCard = ({ opportunity }) => {
   if (opportunity.cause) tags.push(opportunity.cause);
   if (opportunity.durationHours) tags.push(`${opportunity.durationHours}h`);
 
-  const imageSrc = org.logoUrl || opportunity.image || "/images/parkcleanup.png";
+  const imageSrc = org.logoUrl || opportunity.imageUrl || opportunity.image || "/images/parkcleanup.png";
+
+  const handleMoreClick = () => {
+    navigate(`/opportunities/${opportunity._id}`);
+  };
 
   return (
     <div className="opportunityCard">
@@ -37,15 +40,16 @@ const OpportunityCard = ({ opportunity }) => {
           ))}
         </div>
 
-        {/* organization name intentionally hidden */}
-
-        <button className="moreBtn">More →</button>
+        <button className="moreBtn" onClick={handleMoreClick}>
+          More →
+        </button>
       </div>
     </div>
   );
 };
 
 const VolunteerOpportunity = () => {
+  const navigate = useNavigate();
   const [displayName, setDisplayName] = useState("Volunteer");
 
   const [opportunities, setOpportunities] = useState([]);
@@ -53,28 +57,46 @@ const VolunteerOpportunity = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchOpportunities = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/opportunities`);
-        const result = await res.json();
-        if (result.success && result.data && result.data.opportunities) {
-          setOpportunities(result.data.opportunities);
-        } else if (result.success && Array.isArray(result.data)) {
-          setOpportunities(result.data);
-        } else {
-          setOpportunities([]);
-        }
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load opportunities");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchOpportunities();
+    fetchUserProfile();
   }, []);
+
+  const fetchUserProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/user/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setDisplayName(data.data.profile?.displayName || "Volunteer");
+      }
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    }
+  };
+
+  const fetchOpportunities = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/opportunities`);
+      const result = await res.json();
+      if (result.success && result.data && result.data.opportunities) {
+        setOpportunities(result.data.opportunities);
+      } else if (result.success && Array.isArray(result.data)) {
+        setOpportunities(result.data);
+      } else {
+        setOpportunities([]);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load opportunities");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /*Carousel State & Settings*/
   const [featuredIndex, setFeaturedIndex] = useState(0);
@@ -95,15 +117,15 @@ const VolunteerOpportunity = () => {
         <div className="navLeft">
           <h1 className="navLogo">helpinghands</h1>
           <div className="navMenu">
-            <Link to="/organization-dashboard" className="navLink">
+            <Link to="/dashboard" className="navLink">
               <span className="navIcon">▦</span> Dashboard
             </Link>
-            <a className="navLink active">
+            <Link to="/opportunities" className="navLink active">
               <span className="navIcon">✦</span> Opportunities
-            </a>
-            <a className="navLink" href="/myevents">
+            </Link>
+            <Link to="/my-events" className="navLink">
               <span className="navIcon">▥</span> My Events
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -111,10 +133,10 @@ const VolunteerOpportunity = () => {
           <button className="notificationBtn">
             <Bell size={20} />
           </button>
-          <Link to="/profile" className="userProfile">
+          <div className="userProfile" onClick={() => navigate('/profile')}>
             <User size={20} />
             <span>{displayName}</span>
-          </Link>
+          </div>
         </div>
       </nav>
 
@@ -145,6 +167,7 @@ const VolunteerOpportunity = () => {
             <button
               className="carouselBtn"
               onClick={() => slideLeft(setFeaturedIndex, featuredIndex)}
+              disabled={featuredIndex === 0}
             >
               <ChevronLeft />
             </button>
@@ -168,6 +191,7 @@ const VolunteerOpportunity = () => {
                   opportunities.length
                 )
               }
+              disabled={featuredIndex >= opportunities.length - cardsToShow}
             >
               <ChevronRight />
             </button>
@@ -182,6 +206,7 @@ const VolunteerOpportunity = () => {
             <button
               className="carouselBtn"
               onClick={() => slideLeft(setAllIndex, allIndex)}
+              disabled={allIndex === 0}
             >
               <ChevronLeft />
             </button>
@@ -201,6 +226,7 @@ const VolunteerOpportunity = () => {
               onClick={() =>
                 slideRight(setAllIndex, allIndex, opportunities.length)
               }
+              disabled={allIndex >= opportunities.length - cardsToShow}
             >
               <ChevronRight />
             </button>
