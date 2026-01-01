@@ -4,14 +4,6 @@ const User = require("../models/User");
 const Volunteer = require("../models/Volunteer");
 const Organization = require("../models/Organization");
 
-const validatePassword = (password) => {
-  const errors = [];
-  if (password.length < 6)
-    errors.push("Password must be at least 6 characters");
-  if (!/[0-9]/.test(password)) errors.push("Must contain number");
-  return errors;
-};
-
 const register = async (req, res) => {
   const { email, password, userType, displayName } = req.body;
   try {
@@ -19,17 +11,7 @@ const register = async (req, res) => {
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: "User already exists" });
 
-    // 2. Validate Password
-    const passwordErrors = validatePassword(password);
-    if (passwordErrors.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Password requirements not met",
-        errors: passwordErrors,
-      });
-    }
-
-    // 3. Create Base User
+    // 2. Create Base User
     const passwordHash = await bcrypt.hash(password, 10);
     user = new User({ email, passwordHash, userType });
     await user.save();

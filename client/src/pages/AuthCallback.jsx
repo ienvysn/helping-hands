@@ -7,6 +7,7 @@ const AuthCallback = () => {
 
   useEffect(() => {
     const token = searchParams.get("token");
+    const userType = searchParams.get("userType");
     const error = searchParams.get("error");
 
     if (error) {
@@ -18,8 +19,13 @@ const AuthCallback = () => {
 
     if (token) {
       localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify({ userType }));
 
-      navigate("/profile");
+      if (userType === "organization") {
+        navigate("/organization-dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } else {
       navigate("/login?error=Authentication failed");
     }

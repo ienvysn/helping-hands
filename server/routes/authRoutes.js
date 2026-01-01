@@ -16,8 +16,11 @@ const {
   handleGoogleCallback,
 } = require("../controller/oauthController");
 
-router.post("/register", register);
-router.post("/login", login);
+const validate = require("../middleware/validate");
+const { registerSchema, loginSchema } = require("../utils/validationSchemas");
+
+router.post("/register", validate(registerSchema), register);
+router.post("/login", validate(loginSchema), login);
 router.post("/forget-password", forgetPassword);
 router.post("/reset-password", resetPassword);
 router.delete("/delete", isAuthenticated, deleteAccount);

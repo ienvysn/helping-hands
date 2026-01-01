@@ -42,11 +42,7 @@ const opportunitySchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
-    endTime: {
-      type: String,
-      trim: true,
-      default: "",
-    },
+
     durationHours: {
       type: Number,
       min: 0,
