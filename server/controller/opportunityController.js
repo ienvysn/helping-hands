@@ -11,7 +11,6 @@ const createOpportunity = async (req, res) => {
       requirements,
       eventDate,
       startTime,
-
       durationHours,
       opportunityType,
       cause,
@@ -19,21 +18,7 @@ const createOpportunity = async (req, res) => {
       maxVolunteers,
     } = req.body;
 
-    if (!title || !description || !eventDate) {
-      return res.status(400).json({
-        success: false,
-        message: "Title, description, and event date are required",
-      });
-    }
-
-    // Validate event date is in the future
     const eventDateObj = new Date(eventDate);
-    if (eventDateObj < new Date()) {
-      return res.status(400).json({
-        success: false,
-        message: "Event date must be in the future",
-      });
-    }
 
     const organization = await Organization.findOne({ userId: req.user.id });
     if (!organization) {
@@ -316,7 +301,6 @@ const deleteOpportunity = async (req, res) => {
   }
 };
 
-// (Organization only)
 const getMyOpportunities = async (req, res) => {
   try {
     const { page = 1, limit = 10, includeInactive = false } = req.query;
@@ -382,11 +366,14 @@ const getOpportunitySignups = async (req, res) => {
         options: { virtuals: true },
         populate: {
           path: "userId",
-          select: "email createdAt", // Add email and account creation date
+          select: "email createdAt",
         },
       })
       .sort({ signedUpAt: 1 });
+    console.log("Looking for opportunityId:", opportunityId);
 
+    const allSignups = await Signup.find({}); // ← Add
+    console.log("All signups:", allSignups);
     res.json({
       success: true,
       count: signups.length,
@@ -457,6 +444,7 @@ const confirmOneSignup = async (req, res) => {
     const { volunteerId } = req.body;
 
     const opportunity = await Opportunity.findById(opportunityId);
+
     if (!opportunity) {
       return res.status(404).json({
         success: false,
@@ -482,7 +470,7 @@ const confirmOneSignup = async (req, res) => {
       }
     );
 
-    res.status(200).message(result);
+    res.status(200).json(result);
   } catch (error) {
     console.error("Get signups error:", error);
     res.status(500).json({
@@ -539,6 +527,132 @@ const rejectOneSignup = async (req, res) => {
   }
 };
 
+const markAttendance = async (req, res) => {
+  try {
+    const { opportunityId } = req.params;
+    const { attendance } = req.body;
+
+    // Validate input
+    if (!Array.isArray(attendance) || attendance.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Attendance array is required",
+      });
+    }
+
+    // Get opportunity
+    const opportunity = await Opportunity.findById(opportunityId);
+    if (!opportunity) {
+      return res.status(404).json({
+        success: false,
+        message: "Opportunity not found",
+      });
+    }
+
+    // Verify ownership
+    const organization = await Organization.findOne({ userId: req.user.id });
+    if (!organization || !opportunity.organizationId.equals(organization._id)) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    //Diabkled for testing
+    // const eventDate = new Date(opportunity.eventDate);
+    // if (eventDate > new Date()) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Cannot mark attendance before event date",
+    //   });
+    // }
+
+    let confirmedCount = 0;
+    let noShowCount = 0;
+    const errors = [];
+
+    for (const item of attendance) {
+      try {
+        const signup = await Signup.findById(item.signupId).populate(
+          "volunteerId"
+        );
+
+        if (!signup) {
+          errors.push(`Signup ${item.signupId} not found`);
+          continue;
+        }
+
+        // Only allow marking attendance for confirmed volunteers
+        if (signup.status !== "confirmed") {
+          errors.push(
+            `Volunteer ${
+              signup.volunteerId?.displayName || "Unknown"
+            } is not confirmed (Status: ${signup.status})`
+          );
+          continue;
+        }
+
+        console.log(signup);
+
+        if (item.attended === true) {
+          const oldTotalHours = signup.volunteerId.totalHours;
+          const oldLevel = calculateLevel(oldTotalHours);
+
+          signup.status = "attended";
+          signup.attended = true;
+          signup.confirmedAt = new Date();
+          signup.hoursAwarded = opportunity.durationHours;
+          await signup.save();
+
+          signup.volunteerId.totalHours += signup.hoursAwarded;
+          await signup.volunteerId.save();
+
+          console.log(signup);
+
+          const newTotalHours = signup.volunteerId.totalHours;
+          const newLevel = calculateLevel(newTotalHours);
+
+          confirmedCount++;
+        } else {
+          signup.status = "no-show";
+          signup.attended = false;
+          signup.hoursAwarded = 0;
+          await signup.save();
+          noShowCount++;
+        }
+      } catch (err) {
+        errors.push(`Error processing signup ${item.signupId}: ${err.message}`);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Attendance marked successfully`,
+      data: {
+        confirmed: confirmedCount,
+        noShows: noShowCount,
+        errors: errors.length > 0 ? errors : undefined,
+      },
+    });
+  } catch (error) {
+    console.error("Mark attendance error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error marking attendance",
+      error: error.message,
+    });
+  }
+};
+
+const calculateLevel = (totalHours) => {
+  if (totalHours < 10) return 1;
+  if (totalHours < 25) return 2;
+  if (totalHours < 50) return 3;
+  if (totalHours < 100) return 4;
+  if (totalHours < 200) return 5;
+  return Math.floor(totalHours / 100) + 4;
+};
+
 module.exports = {
   createOpportunity,
   getAllOpportunities,
@@ -549,6 +663,7 @@ module.exports = {
   getOpportunitySignups,
   confirmAllSignups,
   confirmOneSignup,
-
   rejectOneSignup,
+  markAttendance,
+  calculateLevel,
 };

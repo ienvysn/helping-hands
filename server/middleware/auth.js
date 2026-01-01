@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const VolunteerProfile = require("../models/Volunteer");
+const OrganizationProfile = require("../models/Organization");
 
 const isAuthenticated = async (req, res, next) => {
   try {
@@ -31,11 +33,21 @@ const isAuthenticated = async (req, res, next) => {
       userType: user.userType,
     };
 
+    if (user.userType === "volunteer") {
+      req.user.volunteerProfile = await VolunteerProfile.findOne({
+        userId: user._id,
+      });
+    } else if (user.userType === "organization") {
+      req.user.organizationProfile = await OrganizationProfile.findOne({
+        userId: user._id,
+      });
+    }
+
     next();
   } catch (error) {
     return res.status(401).json({
       success: false,
-      message: "Invalid token",
+      message: error.message,
     });
   }
 };

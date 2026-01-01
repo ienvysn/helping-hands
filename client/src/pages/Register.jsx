@@ -29,6 +29,8 @@ const Register = () => {
     }
   };
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -54,11 +56,9 @@ const Register = () => {
 
       if (res.ok) {
         localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
         alert("Register successful!");
-        if (
-          data.data.userType === "organization" ||
-          userType === "organization"
-        ) {
+        if (data.user.userType === "organization") {
           navigate("/organization-dashboard");
         } else {
           navigate("/dashboard");

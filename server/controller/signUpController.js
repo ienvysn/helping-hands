@@ -1,5 +1,4 @@
 const Opportunity = require("../models/Opportunity");
-const Organization = require("../models/Organization");
 const Signup = require("../models/SignUp");
 
 const signUpForOpportunity = async (req, res) => {
@@ -26,14 +25,17 @@ const signUpForOpportunity = async (req, res) => {
     ) {
       return res.status(400).json({ error: "Event is full" });
     }
+    console.log(req.user);
 
+    console.log(req.user.volunteerProfile);
     const existingSignup = await Signup.findOne({
       volunteerId: req.user.volunteerProfile._id,
       opportunityId: opportunityId,
       status: { $ne: "cancelled" },
     });
+
     if (existingSignup) {
-      res.status(400).message("You have already signed in");
+      return res.status(400).json({ error: "You have already signed up" });
     }
 
     const signup = await Signup.create({
@@ -44,10 +46,18 @@ const signUpForOpportunity = async (req, res) => {
       hoursAwarded: 0,
     });
 
-    res.status(200).message({ message: "Registered sucessfully", signup });
-  } catch (e) {
-    res.status(400).message(e.message);
+    res.status(201).json({
+      success: true,
+      message: "Registered successfully",
+      data: signup,
+    });
+  } catch (error) {
+    console.error("Signup error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
 
-module.export = { signUpForOpportunity };
+module.exports = { signUpForOpportunity };

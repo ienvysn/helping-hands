@@ -26,7 +26,9 @@ const OrganizationDashboard = () => {
   // Check authentication and user type
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const userType = localStorage.getItem("userType");
+    const userString = localStorage.getItem("user");
+    const user = userString ? JSON.parse(userString) : null;
+    const userType = user?.userType;
 
     if (!token) {
       navigate("/login");
@@ -191,7 +193,16 @@ const OrganizationDashboard = () => {
           maxVolunteers: "",
         });
       } else {
-        alert(data.message || "Failed to create opportunity");
+
+        if (data.errors && Array.isArray(data.errors)) {
+
+          const errorMessages = data.errors
+            .map((err) => `• ${err.field}: ${err.message}`)
+            .join("\n");
+          alert(`Validation Failed:\n${errorMessages}`);
+        } else {
+          alert(data.message || "Failed to create opportunity");
+        }
       }
     } catch (error) {
       console.error("Error:", error);

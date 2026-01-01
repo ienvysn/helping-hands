@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const signupSchema = new mongoose.Schema(
   {
     volunteerId: {
@@ -13,7 +15,7 @@ const signupSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["pending", "confirmed", "no-show"],
+      enum: ["pending", "confirmed", "no-show", "rejected", "attended"],
       default: "pending",
     },
 

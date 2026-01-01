@@ -35,7 +35,7 @@ const Login = () => {
 
       if (res.ok) {
         localStorage.setItem("token", data.data.token);
-        localStorage.setItem("userType", data.data.user.userType);
+        localStorage.setItem("user", JSON.stringify(data.data.user));
 
         console.log("Logged in as:", data.data.user.userType);
 

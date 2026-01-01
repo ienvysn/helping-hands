@@ -95,4 +95,3 @@ opportunitySchema.index({ cause: 1, isActive: 1 });
 opportunitySchema.index({ opportunityType: 1, isActive: 1 });
 
 module.exports = mongoose.model("Opportunity", opportunitySchema);
-s

@@ -11,8 +11,10 @@ const ProfileDashboard = () => {
   const [eventsLoading, setEventsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userType = localStorage.getItem('userType');
+    const token = localStorage.getItem("token");
+    const userString = localStorage.getItem("user");
+    const user = userString ? JSON.parse(userString) : null;
+    const userType = user?.userType;
 
     if (!token) {
       navigate('/login');
@@ -81,10 +83,10 @@ const ProfileDashboard = () => {
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true
     });
   };
 
@@ -208,8 +210,8 @@ const ProfileDashboard = () => {
               />
             </div>
             <p className="progressSubtext">
-              {remainingHours > 0 
-                ? `${remainingHours} more hours to reach Level ${level + 1}!` 
+              {remainingHours > 0
+                ? `${remainingHours} more hours to reach Level ${level + 1}!`
                 : `You've reached Level ${level}! Keep going!`
               }
             </p>
@@ -265,7 +267,7 @@ const ProfileDashboard = () => {
         {/* Upcoming Events */}
         <div className="profileCard">
           <h3 className="sectionTitle">Upcoming Events</h3>
-          
+
           {eventsLoading ? (
             <div className="eventsLoading">Loading events...</div>
           ) : events.length > 0 ? (
@@ -290,7 +292,7 @@ const ProfileDashboard = () => {
                         {event.endDate && ` - ${formatTime(event.endDate)}`}
                       </p>
                     </div>
-                    <button 
+                    <button
                       className="eventViewBtn"
                       onClick={() => navigate(`/event/${event._id || event.id}`)}
                     >
@@ -307,7 +309,7 @@ const ProfileDashboard = () => {
               <p className="emptySubtext">
                 Check the Opportunities page to join new volunteer events and make a difference!
               </p>
-              <button 
+              <button
                 className="browseBtn"
                 onClick={() => navigate('/opportunities')}
               >
