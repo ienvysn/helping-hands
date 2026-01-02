@@ -307,3 +307,12 @@ section:nth-of-type(2) .sectionTitle {
     min-width: 200px;
   }
 }
+
+.moreBtn {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.moreBtn:active {
+  transform: scale(0.92);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
