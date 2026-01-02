@@ -46,7 +46,7 @@ const EventDetail = () => {
 
       const data = await res.json();
       console.log("Opportunity data:", data);
-      
+
       if (data.success) {
         setOpportunity(data.data);
       } else {
@@ -84,17 +84,17 @@ const EventDetail = () => {
   const formatTimeRange = () => {
     const start = formatTime(opportunity.startTime);
     const end = formatTime(opportunity.endTime);
-    
+
     if (start && end) {
       return `${start} - ${end}`;
     } else if (start) {
       return start;
     } else if (opportunity.eventDate) {
       const date = new Date(opportunity.eventDate);
-      return date.toLocaleTimeString('en-US', { 
-        hour: 'numeric', 
+      return date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
         minute: '2-digit',
-        hour12: true 
+        hour12: true
       });
     }
     return "";
@@ -103,12 +103,15 @@ const EventDetail = () => {
   const handleSignUp = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/opportunities/${id}/signup`, {
+      const res = await fetch(`http://localhost:5000/api/signups`, {
         method: "POST",
-        headers: { 
+        headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         },
+        body: JSON.stringify({
+          opportunityId: id
+        }),
       });
 
       const data = await res.json();
@@ -192,8 +195,8 @@ const EventDetail = () => {
 
         {/* Hero Image */}
         <div className="eventHeroImage">
-          <img 
-            src={opportunity.imageUrl || "/images/parkcleanup.png"} 
+          <img
+            src={opportunity.imageUrl || "/images/parkcleanup.png"}
             alt={opportunity.title}
           />
         </div>
@@ -203,7 +206,7 @@ const EventDetail = () => {
           <div className="eventHeader">
             <h1 className="eventTitle">{opportunity.title}</h1>
             <p className="eventOrganizer">by {opportunity.organizationId?.organizationName || "Organization"}</p>
-            
+
             <div className="eventMetaInfo">
               <div className="metaItem">
                 <Calendar size={16} />
@@ -238,8 +241,8 @@ const EventDetail = () => {
                   title="Event Location"
                 ></iframe>
               ) : (
-                <img 
-                  src={opportunity.mapImageUrl || opportunity.imageUrl || "/images/parkcleanup.png"} 
+                <img
+                  src={opportunity.mapImageUrl || opportunity.imageUrl || "/images/parkcleanup.png"}
                   alt="Location map"
                 />
               )}

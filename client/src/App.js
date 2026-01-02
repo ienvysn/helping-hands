@@ -36,6 +36,7 @@ function App() {
             path="/organization-dashboard"
             element={<OrganizationDashboard />}
           />
+          <Route path="/opportunities/:id" element={<EventDetail />} />
         </Route>
 
         {/* Shared / Unprotected / Callback */}
