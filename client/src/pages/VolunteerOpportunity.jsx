@@ -65,7 +65,7 @@ const VolunteerOpportunity = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-      
+
       const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/user/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -172,10 +172,17 @@ const VolunteerOpportunity = () => {
               <ChevronLeft />
             </button>
 
-            <div className="opportunityGrid">
+            <div className={`opportunityGrid ${!loading && !error && opportunities.length === 0 ? 'empty' : ''}`}>
               {loading && <p>Loading opportunities...</p>}
               {error && <p>{error}</p>}
-              {!loading && !error && opportunities
+              {!loading && !error && opportunities.length === 0 && (
+                <div className="noOpportunities">
+                  <div className="noDataIcon">∅</div>
+                  <h3>No Featured Opportunities</h3>
+                  <p>Check back later for new events!</p>
+                </div>
+              )}
+              {!loading && !error && opportunities.length > 0 && opportunities
                 .slice(featuredIndex, featuredIndex + cardsToShow)
                 .map((item) => (
                   <OpportunityCard key={item._id} opportunity={item} />
@@ -211,10 +218,17 @@ const VolunteerOpportunity = () => {
               <ChevronLeft />
             </button>
 
-            <div className="opportunityGrid">
+            <div className={`opportunityGrid ${!loading && !error && opportunities.length === 0 ? 'empty' : ''}`}>
               {loading && <p>Loading opportunities...</p>}
               {error && <p>{error}</p>}
-              {!loading && !error && opportunities
+              {!loading && !error && opportunities.length === 0 && (
+                <div className="noOpportunities">
+                  <div className="noDataIcon">∅</div>
+                  <h3>No Opportunities Right Now</h3>
+                  <p>We couldn't find any opportunities matching your criteria.</p>
+                </div>
+              )}
+              {!loading && !error && opportunities.length > 0 && opportunities
                 .slice(allIndex, allIndex + cardsToShow)
                 .map((item) => (
                   <OpportunityCard key={item._id} opportunity={item} />

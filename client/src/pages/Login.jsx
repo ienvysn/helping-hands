@@ -48,7 +48,7 @@ const Login = () => {
         setSubmitError(data.message || "Login failed");
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error:", error.message);
       setSubmitError("Server not responding");
     }
   };

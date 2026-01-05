@@ -46,6 +46,29 @@ const signUpForOpportunity = async (req, res) => {
       hoursAwarded: 0,
     });
 
+    // Create notifications
+    const { createNotification } = require("../utils/notificationHelper");
+    const Organization = require("../models/Organization");
+
+
+    await createNotification(
+      req.user._id,
+      "signup_confirmation",
+      "Signup Confirmation",
+      `You have successfully signed up for "${opportunity.title}".`
+    );
+
+
+    const organization = await Organization.findById(opportunity.organizationId);
+    if (organization) {
+      await createNotification(
+        organization.userId,
+        "new_signup",
+        "New Signup",
+        `A new volunteer has signed up for "${opportunity.title}".`
+      );
+    }
+
     res.status(201).json({
       success: true,
       message: "Registered successfully",

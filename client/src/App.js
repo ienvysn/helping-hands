@@ -20,7 +20,7 @@ function App() {
       <Routes>
         {/* Public Routes (Redirect to Dashboard if logged in) */}
         <Route element={<PublicRoute />}>
-          <Route path="/" element={<LandingPage />} />
+
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -40,7 +40,8 @@ function App() {
         </Route>
 
         {/* Shared / Unprotected / Callback */}
-        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/auth/call back" element={<AuthCallback />} />
       </Routes>
     </Router>
   );

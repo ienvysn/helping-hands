@@ -1,6 +1,8 @@
 const Opportunity = require("../models/Opportunity");
 const Organization = require("../models/Organization");
 const Signup = require("../models/SignUp");
+const { createNotification } = require("../utils/notificationHelper");
+const VolunteerProfile = require("../models/Volunteer");
 
 const createOpportunity = async (req, res) => {
   try {
@@ -370,10 +372,7 @@ const getOpportunitySignups = async (req, res) => {
         },
       })
       .sort({ signedUpAt: 1 });
-    console.log("Looking for opportunityId:", opportunityId);
 
-    const allSignups = await Signup.find({}); // ← Add
-    console.log("All signups:", allSignups);
     res.json({
       success: true,
       count: signups.length,
@@ -409,9 +408,10 @@ const confirmAllSignups = async (req, res) => {
       });
     }
 
-    const signups = await Signup.find({
-      opportunityId: opportunityId,
-    });
+    const pendingSignups = await Signup.find({
+      opportunityId,
+      status: "pending",
+    }).populate("volunteerId");
 
     const result = await Signup.updateMany(
       { opportunityId, status: "pending" },
@@ -423,13 +423,25 @@ const confirmAllSignups = async (req, res) => {
       }
     );
 
+    // Notify all volunteers
+    for (const signup of pendingSignups) {
+      if (signup.volunteerId && signup.volunteerId.userId) {
+        await createNotification(
+          signup.volunteerId.userId,
+          "signup_accepted",
+          "Signup Accepted",
+          `Your signup for "${opportunity.title}" has been accepted!`
+        );
+      }
+    }
+
     res.json({
       success: true,
       count: result.modifiedCount,
-      data: signups,
+      data: pendingSignups,
     });
   } catch (error) {
-    console.error("Get signups error:", error);
+    console.error("Confirm all signups error:", error);
     res.status(500).json({
       success: false,
       message: "Error confirming all signups",
@@ -460,22 +472,43 @@ const confirmOneSignup = async (req, res) => {
       });
     }
 
-    const result = await Signup.updateOne(
-      { opportunityId: opportunityId, volunteerId: volunteerId },
-      {
-        $set: {
-          status: "confirmed",
-          confirmedAt: new Date(),
-        },
-      }
-    );
+    const signup = await Signup.findOne({
+      opportunityId,
+      volunteerId,
+      status: "pending",
+    }).populate("volunteerId");
 
-    res.status(200).json(result);
+    if (!signup) {
+      return res.status(404).json({
+        success: false,
+        message: "Pending signup not found",
+      });
+    }
+
+    signup.status = "confirmed";
+    signup.confirmedAt = new Date();
+    await signup.save();
+
+    // Create notification
+    if (signup.volunteerId && signup.volunteerId.userId) {
+      await createNotification(
+        signup.volunteerId.userId,
+        "signup_accepted",
+        "Signup Accepted",
+        `Your signup for "${opportunity.title}" has been accepted!`
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Signup confirmed",
+      data: signup,
+    });
   } catch (error) {
-    console.error("Get signups error:", error);
+    console.error("Confirm one signup error:", error);
     res.status(500).json({
       success: false,
-      message: "Error confirming signups",
+      message: "Error confirming signup",
       error: error.message,
     });
   }
@@ -486,43 +519,59 @@ const rejectOneSignup = async (req, res) => {
     const { opportunityId } = req.params;
     const { volunteerId } = req.body;
 
+    const opportunity = await Opportunity.findById(opportunityId);
+    if (!opportunity) {
+      return res.status(404).json({
+        success: false,
+        message: "Opportunity not found",
+      });
+    }
+
     const organization = await Organization.findOne({ userId: req.user.id });
-    if (!organization) {
+    if (!organization || !opportunity.organizationId.equals(organization._id)) {
       return res.status(403).json({
         success: false,
         message: "Unauthorized",
       });
     }
 
-    const result = await Signup.updateOne(
-      {
-        opportunityId,
-        volunteerId,
-        status: "pending",
-      },
-      {
-        $set: {
-          status: "rejected",
-          rejectedAt: new Date(),
-        },
-      }
-    );
+    const signup = await Signup.findOne({
+      opportunityId,
+      volunteerId,
+      status: "pending",
+    }).populate("volunteerId");
 
-    if (result.matchedCount === 0) {
+    if (!signup) {
       return res.status(404).json({
         success: false,
         message: "Pending signup not found",
       });
     }
 
+    signup.status = "rejected";
+    signup.rejectedAt = new Date();
+    await signup.save();
+
+    // Create notification
+    if (signup.volunteerId && signup.volunteerId.userId) {
+      await createNotification(
+        signup.volunteerId.userId,
+        "signup_rejected",
+        "Signup Rejected",
+        `Your signup for "${opportunity.title}" was not accepted this time.`
+      );
+    }
+
     res.json({
       success: true,
-      modifiedCount: result.modifiedCount,
+      message: "Signup rejected",
     });
   } catch (error) {
+    console.error("Reject one signup error:", error);
     res.status(500).json({
       success: false,
       message: "Error rejecting signup",
+      error: error.message,
     });
   }
 };
@@ -607,10 +656,28 @@ const markAttendance = async (req, res) => {
           signup.volunteerId.totalHours += signup.hoursAwarded;
           await signup.volunteerId.save();
 
-          console.log(signup);
-
           const newTotalHours = signup.volunteerId.totalHours;
           const newLevel = calculateLevel(newTotalHours);
+
+          // Notification for hours confirmed
+          if (signup.volunteerId.userId) {
+            await createNotification(
+              signup.volunteerId.userId,
+              "hours_confirmed",
+              "Hours Confirmed",
+              `You have been awarded ${signup.hoursAwarded} hours for "${opportunity.title}".`
+            );
+
+            // Notification for level up
+            if (newLevel > oldLevel) {
+              await createNotification(
+                signup.volunteerId.userId,
+                "level_up",
+                "Level Up!",
+                `Congratulations! You have reached Level ${newLevel}!`
+              );
+            }
+          }
 
           confirmedCount++;
         } else {
@@ -618,6 +685,16 @@ const markAttendance = async (req, res) => {
           signup.attended = false;
           signup.hoursAwarded = 0;
           await signup.save();
+
+          // Notification for no-show
+          if (signup.volunteerId && signup.volunteerId.userId) {
+            await createNotification(
+              signup.volunteerId.userId,
+              "attendance_not_confirmed",
+              "Attendance Not Confirmed",
+              `Your attendance for "${opportunity.title}" was marked as no-show.`
+            );
+          }
           noShowCount++;
         }
       } catch (err) {
@@ -667,3 +744,4 @@ module.exports = {
   markAttendance,
   calculateLevel,
 };
+
