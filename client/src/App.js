@@ -8,6 +8,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/VolunteerProfile";
 import VolDashboard from "./pages/VolunteerDashbaord";
 import OrganizationDashboard from "./pages/OrganizationDashboard";
+import Notification from "./pages/Notification";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -32,6 +33,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/dashboard" element={<VolDashboard />} />
           <Route path="/opportunities" element={<VolunteerOpportunity />} />
+          <Route path="/notifications" element={<Notification />} />
           <Route
             path="/organization-dashboard"
             element={<OrganizationDashboard />}
