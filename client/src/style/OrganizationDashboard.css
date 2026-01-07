@@ -12,7 +12,7 @@
     sans-serif;
 }
 
-/* ========== NAVBAR - UNCHANGED FROM VOLUNTEER DASHBOARD ========== */
+
 .navbar {
   background-color: #1e3a5f;
   display: flex;
@@ -89,9 +89,7 @@
   font-size: 0.95rem;
   font-weight: 500;
 }
-/* ========== END OF NAVBAR ========== */
 
-/* Stats Container - Updated to match image */
 .stats-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
