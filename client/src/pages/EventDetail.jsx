@@ -119,7 +119,7 @@ const EventDetail = () => {
         alert("Successfully signed up for this event!");
         fetchOpportunityDetails();
       } else {
-        alert(data.message || "Failed to sign up");
+        alert(data.error);
       }
     } catch (err) {
       console.error("Error signing up:", err);

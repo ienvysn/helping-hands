@@ -421,7 +421,7 @@ const handleOpenEdit = (event) => {
     );
 
     if (attendanceArray.every((a) => !a.attended)) {
-      alert("Please mark at least one volunteer as present");
+      alert("Please mark at least one volunteer as attended");
       return;
     }
 
@@ -451,7 +451,7 @@ const handleOpenEdit = (event) => {
 
       if (res.ok && data.success) {
         alert(
-          `Attendance marked successfully!\nPresent: ${data.data.confirmed}\nAbsent: ${data.data.noShows}`
+          `Attendance marked successfully!\nAttended: ${data.data.confirmed}\nNo-shows: ${data.data.noShows}`
         );
         setCurrentView("attendance");
         await fetchSignups(selectedOpportunity._id);
@@ -518,12 +518,7 @@ const handleOpenEdit = (event) => {
               <Link to="/organization-dashboard" className="navLink">
                 <span className="navIcon">▦</span> Dashboard
               </Link>
-              <Link to="/opportunities" className="navLink">
-                <span className="navIcon">✦</span> Opportunities
-              </Link>
-              <Link to="#" className="navLink">
-                <span className="navIcon">▥</span> My Events
-              </Link>
+           
             </div>
           </div>
           <div className="navRight">
@@ -1163,16 +1158,16 @@ const handleOpenEdit = (event) => {
           {/* Summary Stats */}
           <div className="attendance-summary">
             <div className="summary-stat">
-              <span className="summary-label">Total</span>
+              <span className="summary-label">Total </span>
               <span className="summary-value">{total}</span>
             </div>
             <div className="summary-stat">
               <span className="summary-label">Present</span>
-              <span className="summary-value present">{attendedCount}</span>
+              <span className="summary-value Present">{attendedCount}</span>
             </div>
             <div className="summary-stat">
               <span className="summary-label">Absent</span>
-              <span className="summary-value absent">{noShowCount}</span>
+              <span className="summary-value Absent">{noShowCount}</span>
             </div>
           </div>
 
