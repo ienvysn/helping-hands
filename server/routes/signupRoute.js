@@ -1,8 +1,11 @@
 const express = require("express");
-const { signUpForOpportunity } = require("../controller/signUpController");
+const { signUpForOpportunity, getMySignups } = require("../controller/signUpController");
 const { isAuthenticated, isVolunteer } = require("../middleware/auth");
+const Signup = require("../models/SignUp");
+const Volunteer = require("../models/Volunteer");
+const Opportunity = require("../models/Opportunity");
 
-router = express.Router();
+const router = express.Router();
 
 const validate = require("../middleware/validate");
 const { signupForOpportunitySchema } = require("../utils/validationSchemas");
@@ -15,13 +18,10 @@ router.post(
   signUpForOpportunity
 );
 
-// Add this to your server/routes/signupRoute.js (for testing only)
-// Remove this route before production!
-
-const Volunteer = require("../models/Volunteer");
-const Opportunity = require("../models/Opportunity");
+router.get("/my-signups", isAuthenticated, isVolunteer, getMySignups);
 
 // TEST ROUTE - Create attended signup for testing reviews
+// REMOVE THIS BEFORE PRODUCTION!
 router.post(
   "/test/create-attended",
   isAuthenticated,
@@ -46,14 +46,12 @@ router.post(
         });
       }
 
-      // Check if signup already exists
       const existingSignup = await Signup.findOne({
         volunteerId: volunteer._id,
         opportunityId: opportunityId,
       });
 
       if (existingSignup) {
-        // Update to attended
         existingSignup.status = "attended";
         existingSignup.attended = true;
         existingSignup.hoursAwarded = opportunity.durationHours || 3;
@@ -66,7 +64,6 @@ router.post(
         });
       }
 
-      // Create new attended signup
       const signup = await Signup.create({
         volunteerId: volunteer._id,
         opportunityId: opportunityId,
