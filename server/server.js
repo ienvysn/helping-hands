@@ -60,7 +60,9 @@ app.use("/api/user", userRoutes);
 app.use("/api/opportunities", opportunityRoutes);
 app.use("/api/signups", signupRoutes);
 app.use("/api/review", reviewRoutes)
-app.use("/api/notificaition",notificationRoutes)
+app.use("/api/notificaitions",notificationRoutes)
+
+
 
 app.get("/", (req, res) =>
   res.json({ message: "Volunteer App API is running" })
