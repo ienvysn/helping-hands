@@ -76,7 +76,15 @@ const opportunitySchema = new mongoose.Schema(
     maxVolunteers: {
       type: Number,
       min: 1,
-      default: null, // null means unlimited
+      default: null,
+    },
+    volunteers: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }],
+    registeredVolunteers: {
+      type: Number,
+      default: 0,
     },
     isActive: {
       type: Boolean,

@@ -6,17 +6,16 @@ const PublicRoute = () => {
 
   if (token && userString) {
     try {
-        const user = JSON.parse(userString);
-        if (user.userType === "organization") {
-            return <Navigate to="/organization-dashboard" replace />;
-        } else {
-
-            return <Navigate to="/dashboard" replace />;
-        }
+      const user = JSON.parse(userString);
+      if (user.userType === "organization") {
+        return <Navigate to="/organization-dashboard" replace />;
+      } else {
+        return <Navigate to="/dashboard" replace />;
+      }
     } catch (e) {
-
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      return <Outlet />;
     }
   }
 

@@ -28,8 +28,11 @@ const OpportunityCard = ({ opportunity }) => {
   return (
     <div className="opportunityCard">
       <img src={imageSrc} alt={opportunity.title} />
+      <img src={imageSrc} alt={opportunity.title} />
 
       <div className="cardBody">
+        <h4>{opportunity.title}</h4>
+        <p className="cardDate">{dateTimeStr}</p>
         <h4>{opportunity.title}</h4>
         <p className="cardDate">{dateTimeStr}</p>
 
@@ -50,6 +53,8 @@ const OpportunityCard = ({ opportunity }) => {
 };
 
 const VolunteerOpportunity = () => {
+  const navigate = useNavigate();
+  const [displayName, setDisplayName] = useState("Volunteer");
   const navigate = useNavigate();
   const [displayName, setDisplayName] = useState("Volunteer");
 
@@ -163,7 +168,10 @@ const VolunteerOpportunity = () => {
               <span className="navIcon">✦</span> Opportunities
             </Link>
             <Link to="/my-events" className="navLink">
+            </Link>
+            <Link to="/my-events" className="navLink">
               <span className="navIcon">▥</span> My Events
+            </Link>
             </Link>
           </div>
         </div>
@@ -275,6 +283,8 @@ const VolunteerOpportunity = () => {
               )}
               {!loading && !error && opportunities.length > 0 && opportunities
                 .slice(featuredIndex, featuredIndex + cardsToShow)
+                .map((item) => (
+                  <OpportunityCard key={item._id} opportunity={item} />
                 .map((item) => (
                   <OpportunityCard key={item._id} opportunity={item} />
                 ))}
