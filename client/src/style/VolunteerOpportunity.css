@@ -83,6 +83,13 @@ body {
   padding: 0 2.5rem 4rem;
 }
 
+.filterSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 .searchBar {
   display: flex;
   align-items: center;
@@ -91,6 +98,7 @@ body {
   padding: 0.75rem 1.2rem;
   border-radius: 30px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  flex: 1;
 }
 
 .searchBar input {
@@ -101,10 +109,33 @@ body {
   color: #374151;
 }
 
+.filterControls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filterSelect {
+  padding: 0.6rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: white;
+  color: #475569;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  min-width: 140px;
+}
+
+.filterSelect:focus {
+  border-color: #0b3a73;
+}
+
 .filterPills {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
 .pill {
