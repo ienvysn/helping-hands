@@ -1,3 +1,4 @@
+const Volunteer = require("../models/Volunteer");
 const Opportunity = require("../models/Opportunity");
 const Signup = require("../models/SignUp");
 
@@ -82,5 +83,39 @@ const signUpForOpportunity = async (req, res) => {
     });
   }
 };
+const getMySignups = async (req, res) => {
+  try {
+    const volunteer = await Volunteer.findOne({ userId: req.user.id });
+    
+    if (!volunteer) {
+      return res.status(404).json({
+        success: false,
+        message: "Volunteer profile not found",
+      });
+    }
 
-module.exports = { signUpForOpportunity };
+    const signups = await Signup.find({ volunteerId: volunteer._id })
+      .populate({
+        path: "opportunityId",
+        populate: {
+          path: "organizationId",
+          select: "organizationName logoUrl",
+        },
+      })
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data: signups,
+    });
+  } catch (error) {
+    console.error("Get my signups error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching your signups",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { signUpForOpportunity, getMySignups};
