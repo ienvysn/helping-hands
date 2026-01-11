@@ -1,5 +1,5 @@
 const Review = require("../models/Review");
-const Signup = require("../models/SignUp");
+const Signup = require("../models/Signup");
 const Opportunity = require("../models/Opportunity");
 const Volunteer = require("../models/Volunteer");
 const Organization = require("../models/Organization");

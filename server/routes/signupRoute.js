@@ -1,9 +1,7 @@
 const express = require("express");
 const { signUpForOpportunity, getMySignups } = require("../controller/signUpController");
 const { isAuthenticated, isVolunteer } = require("../middleware/auth");
-const Signup = require("../models/SignUp");
-const Volunteer = require("../models/Volunteer");
-const Opportunity = require("../models/Opportunity");
+
 
 const router = express.Router();
 

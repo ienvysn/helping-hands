@@ -1,6 +1,6 @@
 const Opportunity = require("../models/Opportunity");
 const Organization = require("../models/Organization");
-const Signup = require("../models/SignUp");
+const Signup = require("../models/Signup");
 const { createNotification } = require("../utils/notificationHelper");
 const VolunteerProfile = require("../models/Volunteer");
 
