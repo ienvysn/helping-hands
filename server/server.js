@@ -9,6 +9,7 @@ const opportunityRoutes = require("./routes/opportunityRoutes");
 const userRoutes = require("./routes/userRoutes");
 const signupRoutes = require("./routes/signupRoute");
 const reviewRoutes = require("./routes/reviewRoutes")
+const notificationRoutes= require("./routes/notificationRoutes")
 
 require("./utils/passport");
 
@@ -59,6 +60,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/opportunities", opportunityRoutes);
 app.use("/api/signups", signupRoutes);
 app.use("/api/review", reviewRoutes)
+app.use("/api/notificaition",notificationRoutes)
 
 app.get("/", (req, res) =>
   res.json({ message: "Volunteer App API is running" })
