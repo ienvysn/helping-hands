@@ -1,5 +1,5 @@
 const Opportunity = require("../models/Opportunity");
-const Signup = require("../models/SignUp");
+const Signup = require("../models/Signup");
 
 const signUpForOpportunity = async (req, res) => {
   try {
