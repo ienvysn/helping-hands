@@ -49,4 +49,4 @@ const signupSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("SignUp", signupSchema);
+module.exports = mongoose.model("Signup", signupSchema);

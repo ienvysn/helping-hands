@@ -8,6 +8,8 @@ import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/VolunteerProfile";
 import VolDashboard from "./pages/VolunteerDashbaord";
 import OrganizationDashboard from "./pages/OrganizationDashboard";
+import Notification from "./pages/Notification";
+import MyEvents from "./pages/MyEvents"; 
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -20,7 +22,7 @@ function App() {
       <Routes>
         {/* Public Routes (Redirect to Dashboard if logged in) */}
         <Route element={<PublicRoute />}>
-          <Route path="/" element={<LandingPage />} />
+
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -32,6 +34,8 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/dashboard" element={<VolDashboard />} />
           <Route path="/opportunities" element={<VolunteerOpportunity />} />
+          <Route path="/my-events" element={<MyEvents />} />
+          <Route path="/notifications" element={<Notification />} />
           <Route
             path="/organization-dashboard"
             element={<OrganizationDashboard />}
@@ -40,7 +44,8 @@ function App() {
         </Route>
 
         {/* Shared / Unprotected / Callback */}
-        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/auth/call back" element={<AuthCallback />} />
       </Routes>
     </Router>
   );

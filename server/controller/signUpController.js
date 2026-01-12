@@ -1,3 +1,4 @@
+const Volunteer = require("../models/Volunteer");
 const Opportunity = require("../models/Opportunity");
 const Signup = require("../models/Signup");
 
@@ -46,6 +47,29 @@ const signUpForOpportunity = async (req, res) => {
       hoursAwarded: 0,
     });
 
+    // Create notifications
+    const { createNotification } = require("../utils/notificationHelper");
+    const Organization = require("../models/Organization");
+
+
+    await createNotification(
+      req.user._id,
+      "signup_confirmation",
+      "Signup Confirmation",
+      `You have successfully signed up for "${opportunity.title}".`
+    );
+
+
+    const organization = await Organization.findById(opportunity.organizationId);
+    if (organization) {
+      await createNotification(
+        organization.userId,
+        "new_signup",
+        "New Signup",
+        `A new volunteer has signed up for "${opportunity.title}".`
+      );
+    }
+
     res.status(201).json({
       success: true,
       message: "Registered successfully",
@@ -59,5 +83,39 @@ const signUpForOpportunity = async (req, res) => {
     });
   }
 };
+const getMySignups = async (req, res) => {
+  try {
+    const volunteer = await Volunteer.findOne({ userId: req.user.id });
+    
+    if (!volunteer) {
+      return res.status(404).json({
+        success: false,
+        message: "Volunteer profile not found",
+      });
+    }
 
-module.exports = { signUpForOpportunity };
+    const signups = await Signup.find({ volunteerId: volunteer._id })
+      .populate({
+        path: "opportunityId",
+        populate: {
+          path: "organizationId",
+          select: "organizationName logoUrl",
+        },
+      })
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data: signups,
+    });
+  } catch (error) {
+    console.error("Get my signups error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching your signups",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { signUpForOpportunity, getMySignups};
