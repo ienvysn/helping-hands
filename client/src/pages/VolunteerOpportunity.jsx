@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Bell, User, Search, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import {
+  Bell,
+  User,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import "../style/VolunteerOpportunity.css";
 
@@ -9,17 +16,21 @@ const OpportunityCard = ({ opportunity }) => {
   const eventDate = opportunity.eventDate
     ? new Date(opportunity.eventDate)
     : null;
-  const formattedDate = eventDate
-    ? eventDate.toLocaleDateString()
-    : "TBD";
-  const dateTimeStr = `${formattedDate} | ${opportunity.startTime || ""} - ${opportunity.endTime || ""}`;
+  const formattedDate = eventDate ? eventDate.toLocaleDateString() : "TBD";
+  const dateTimeStr = `${formattedDate} | ${opportunity.startTime || ""} - ${
+    opportunity.endTime || ""
+  }`;
 
   const tags = [];
   if (opportunity.cause) tags.push(opportunity.cause);
   if (opportunity.durationHours) tags.push(`${opportunity.durationHours}h`);
-  tags.push(opportunity.opportunityType === 'remote' ? 'Remote' : 'On-site');
+  tags.push(opportunity.opportunityType === "remote" ? "Remote" : "On-site");
 
-  const imageSrc = org.logoUrl || opportunity.imageUrl || opportunity.image || "/images/parkcleanup.png";
+  const imageSrc =
+    org.logoUrl ||
+    opportunity.imageUrl ||
+    opportunity.image ||
+    "/images/parkcleanup.png";
 
   const handleMoreClick = () => {
     navigate(`/opportunities/${opportunity._id}`);
@@ -28,11 +39,8 @@ const OpportunityCard = ({ opportunity }) => {
   return (
     <div className="opportunityCard">
       <img src={imageSrc} alt={opportunity.title} />
-      <img src={imageSrc} alt={opportunity.title} />
 
       <div className="cardBody">
-        <h4>{opportunity.title}</h4>
-        <p className="cardDate">{dateTimeStr}</p>
         <h4>{opportunity.title}</h4>
         <p className="cardDate">{dateTimeStr}</p>
 
@@ -53,8 +61,6 @@ const OpportunityCard = ({ opportunity }) => {
 };
 
 const VolunteerOpportunity = () => {
-  const navigate = useNavigate();
-  const [displayName, setDisplayName] = useState("Volunteer");
   const navigate = useNavigate();
   const [displayName, setDisplayName] = useState("Volunteer");
 
@@ -85,7 +91,6 @@ const VolunteerOpportunity = () => {
     fetchUserProfile();
   }, [cause, opportunityType, sortBy, order]);
 
-  // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchOpportunities();
@@ -98,9 +103,14 @@ const VolunteerOpportunity = () => {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/user/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${
+          process.env.REACT_APP_API_URL || "http://localhost:5000"
+        }/api/user/profile`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const data = await res.json();
       if (data.success) {
         setDisplayName(data.data.profile?.displayName || "Volunteer");
@@ -120,7 +130,11 @@ const VolunteerOpportunity = () => {
       if (sortBy) params.append("sortBy", sortBy);
       if (order) params.append("order", order);
 
-      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/opportunities?${params.toString()}`);
+      const res = await fetch(
+        `${
+          process.env.REACT_APP_API_URL || "http://localhost:5000"
+        }/api/opportunities?${params.toString()}`
+      );
       const result = await res.json();
 
       if (result.success && result.data && result.data.opportunities) {
@@ -139,7 +153,7 @@ const VolunteerOpportunity = () => {
   };
 
   const handleCauseClick = (selectedCause) => {
-    setCause(prev => prev === selectedCause ? "" : selectedCause);
+    setCause((prev) => (prev === selectedCause ? "" : selectedCause));
   };
 
   /*Carousel State & Settings*/
@@ -168,23 +182,20 @@ const VolunteerOpportunity = () => {
               <span className="navIcon">✦</span> Opportunities
             </Link>
             <Link to="/my-events" className="navLink">
-            </Link>
-            <Link to="/my-events" className="navLink">
               <span className="navIcon">▥</span> My Events
-            </Link>
             </Link>
           </div>
         </div>
 
         <div className="navRight">
-           <button
+          <button
             className="notificationBtn"
-            onClick={() => navigate('/notifications')}
+            onClick={() => navigate("/notifications")}
           >
             <Bell size={20} />
           </button>
 
-          <div className="userProfile" onClick={() => navigate('/profile')}>
+          <div className="userProfile" onClick={() => navigate("/profile")}>
             <User size={20} />
             <span>{displayName}</span>
           </div>
@@ -195,64 +206,64 @@ const VolunteerOpportunity = () => {
       <div className="opportunityContent">
         {/* Search & Filters */}
         <div className="filterSection">
-            <div className="searchBar">
+          <div className="searchBar">
             <Search size={18} />
             <input
-                type="text"
-                placeholder="Search opportunities..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+              type="text"
+              placeholder="Search opportunities..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
-            </div>
 
-            <div className="filterControls">
-                <select
-                    value={opportunityType}
-                    onChange={(e) => setOpportunityType(e.target.value)}
-                    className="filterSelect"
-                >
-                    <option value="">All Types</option>
-                    <option value="on-site">On-site</option>
-                    <option value="remote">Remote</option>
-                </select>
+            <div className="filterDivider"></div>
 
-                <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="filterSelect"
-                >
-                    <option value="eventDate">Date</option>
-                    <option value="createdAt">Posted</option>
-                    <option value="durationHours">Duration</option>
-                </select>
+            <select
+              value={opportunityType}
+              onChange={(e) => setOpportunityType(e.target.value)}
+              className="filterSelect"
+            >
+              <option value="">Type: All</option>
+              <option value="on-site">On-site</option>
+              <option value="remote">Remote</option>
+            </select>
 
-                <select
-                    value={order}
-                    onChange={(e) => setOrder(e.target.value)}
-                    className="filterSelect"
-                >
-                    <option value="asc">Ascending</option>
-                    <option value="desc">Descending</option>
-                </select>
-            </div>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="filterSelect"
+            >
+              <option value="eventDate">Sort: Date</option>
+              <option value="createdAt">Sort: Posted</option>
+              <option value="durationHours">Sort: Duration</option>
+            </select>
+
+            <select
+              value={order}
+              onChange={(e) => setOrder(e.target.value)}
+              className="filterSelect"
+            >
+              <option value="asc">Asc</option>
+              <option value="desc">Desc</option>
+            </select>
+          </div>
         </div>
 
         <div className="filterPills">
+          <button
+            className={`pill ${cause === "" ? "active" : ""}`}
+            onClick={() => setCause("")}
+          >
+            All Causes
+          </button>
+          {CAUSES.map((c) => (
             <button
-                className={`pill ${cause === "" ? "active" : ""}`}
-                onClick={() => setCause("")}
+              key={c}
+              className={`pill ${cause === c ? "active" : ""}`}
+              onClick={() => handleCauseClick(c)}
             >
-                All Causes
+              {c}
             </button>
-            {CAUSES.map(c => (
-                <button
-                    key={c}
-                    className={`pill ${cause === c ? "active" : ""}`}
-                    onClick={() => handleCauseClick(c)}
-                >
-                    {c}
-                </button>
-            ))}
+          ))}
         </div>
 
         {/*Featured Opportunities*/}
@@ -271,7 +282,11 @@ const VolunteerOpportunity = () => {
               <ChevronLeft />
             </button>
 
-            <div className={`opportunityGrid ${!loading && !error && opportunities.length === 0 ? 'empty' : ''}`}>
+            <div
+              className={`opportunityGrid ${
+                !loading && !error && opportunities.length === 0 ? "empty" : ""
+              }`}
+            >
               {loading && <p>Loading opportunities...</p>}
               {error && <p>{error}</p>}
               {!loading && !error && opportunities.length === 0 && (
@@ -281,13 +296,14 @@ const VolunteerOpportunity = () => {
                   <p>Try adjusting your search or filters.</p>
                 </div>
               )}
-              {!loading && !error && opportunities.length > 0 && opportunities
-                .slice(featuredIndex, featuredIndex + cardsToShow)
-                .map((item) => (
-                  <OpportunityCard key={item._id} opportunity={item} />
-                .map((item) => (
-                  <OpportunityCard key={item._id} opportunity={item} />
-                ))}
+              {!loading &&
+                !error &&
+                opportunities.length > 0 &&
+                opportunities
+                  .slice(featuredIndex, featuredIndex + cardsToShow)
+                  .map((item) => (
+                    <OpportunityCard key={item._id} opportunity={item} />
+                  ))}
             </div>
 
             <button
@@ -319,21 +335,30 @@ const VolunteerOpportunity = () => {
               <ChevronLeft />
             </button>
 
-            <div className={`opportunityGrid ${!loading && !error && opportunities.length === 0 ? 'empty' : ''}`}>
+            <div
+              className={`opportunityGrid ${
+                !loading && !error && opportunities.length === 0 ? "empty" : ""
+              }`}
+            >
               {loading && <p>Loading opportunities...</p>}
               {error && <p>{error}</p>}
               {!loading && !error && opportunities.length === 0 && (
                 <div className="noOpportunities">
                   <div className="noDataIcon">∅</div>
                   <h3>No Opportunities Right Now</h3>
-                  <p>We couldn't find any opportunities matching your criteria.</p>
+                  <p>
+                    We couldn't find any opportunities matching your criteria.
+                  </p>
                 </div>
               )}
-              {!loading && !error && opportunities.length > 0 && opportunities
-                .slice(allIndex, allIndex + cardsToShow)
-                .map((item) => (
-                  <OpportunityCard key={item._id} opportunity={item} />
-                ))}
+              {!loading &&
+                !error &&
+                opportunities.length > 0 &&
+                opportunities
+                  .slice(allIndex, allIndex + cardsToShow)
+                  .map((item) => (
+                    <OpportunityCard key={item._id} opportunity={item} />
+                  ))}
             </div>
 
             <button
