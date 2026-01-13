@@ -5,7 +5,6 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-  Filter,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import "../style/VolunteerOpportunity.css";
@@ -68,12 +67,17 @@ const VolunteerOpportunity = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Pagination State
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 9; // Show 9 items per page (3x3 grid)
+
   // Filters State
   const [search, setSearch] = useState("");
   const [cause, setCause] = useState("");
   const [opportunityType, setOpportunityType] = useState("");
-  const [sortBy, setSortBy] = useState("eventDate"); // eventDate, createdAt, durationHours
-  const [order, setOrder] = useState("asc");
+  const [sortBy, setSortBy] = useState("createdAt"); // Default to newest first
+  const [order, setOrder] = useState("desc");
 
   const CAUSES = [
     "Animals",
@@ -89,13 +93,20 @@ const VolunteerOpportunity = () => {
   useEffect(() => {
     fetchOpportunities();
     fetchUserProfile();
-  }, [cause, opportunityType, sortBy, order]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, cause, opportunityType, sortBy, order]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchOpportunities();
+      // Reset to page 1 when searching
+      if (page !== 1) {
+        setPage(1);
+      } else {
+        fetchOpportunities();
+      }
     }, 500);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
   const fetchUserProfile = async () => {
@@ -129,6 +140,8 @@ const VolunteerOpportunity = () => {
       if (opportunityType) params.append("opportunityType", opportunityType);
       if (sortBy) params.append("sortBy", sortBy);
       if (order) params.append("order", order);
+      params.append("page", page);
+      params.append("limit", limit);
 
       const res = await fetch(
         `${
@@ -139,10 +152,12 @@ const VolunteerOpportunity = () => {
 
       if (result.success && result.data && result.data.opportunities) {
         setOpportunities(result.data.opportunities);
-      } else if (result.success && Array.isArray(result.data)) {
-        setOpportunities(result.data);
+        if (result.data.pagination) {
+          setTotalPages(result.data.pagination.totalPages);
+        }
       } else {
         setOpportunities([]);
+        setTotalPages(1);
       }
     } catch (err) {
       console.error(err);
@@ -154,19 +169,14 @@ const VolunteerOpportunity = () => {
 
   const handleCauseClick = (selectedCause) => {
     setCause((prev) => (prev === selectedCause ? "" : selectedCause));
+    setPage(1); // Reset to page 1 on filter change
   };
 
-  /*Carousel State & Settings*/
-  const [featuredIndex, setFeaturedIndex] = useState(0);
-  const [allIndex, setAllIndex] = useState(0);
-  const cardsToShow = 3;
-
-  const slideLeft = (indexSetter, currentIndex) => {
-    indexSetter(Math.max(currentIndex - 1, 0));
-  };
-
-  const slideRight = (indexSetter, currentIndex, length) => {
-    indexSetter(Math.min(currentIndex + 1, length - cardsToShow));
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   return (
@@ -219,7 +229,10 @@ const VolunteerOpportunity = () => {
 
             <select
               value={opportunityType}
-              onChange={(e) => setOpportunityType(e.target.value)}
+              onChange={(e) => {
+                setOpportunityType(e.target.value);
+                setPage(1);
+              }}
               className="filterSelect"
             >
               <option value="">Type: All</option>
@@ -229,17 +242,23 @@ const VolunteerOpportunity = () => {
 
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={(e) => {
+                setSortBy(e.target.value);
+                setPage(1);
+              }}
               className="filterSelect"
             >
-              <option value="eventDate">Sort: Date</option>
-              <option value="createdAt">Sort: Posted</option>
+              <option value="createdAt">Sort: Newest</option>
+              <option value="eventDate">Sort: Event Date</option>
               <option value="durationHours">Sort: Duration</option>
             </select>
 
             <select
               value={order}
-              onChange={(e) => setOrder(e.target.value)}
+              onChange={(e) => {
+                setOrder(e.target.value);
+                setPage(1);
+              }}
               className="filterSelect"
             >
               <option value="asc">Asc</option>
@@ -251,7 +270,7 @@ const VolunteerOpportunity = () => {
         <div className="filterPills">
           <button
             className={`pill ${cause === "" ? "active" : ""}`}
-            onClick={() => setCause("")}
+            onClick={() => handleCauseClick("")}
           >
             All Causes
           </button>
@@ -266,111 +285,59 @@ const VolunteerOpportunity = () => {
           ))}
         </div>
 
-        {/*Featured Opportunities*/}
+        {/* Explore Opportunities Grid */}
         <section>
-          <h2 className="sectionTitle">Featured Opportunities</h2>
-          <p className="sectionSubtitle">
-            Explore volunteering opportunities near you.
-          </p>
-
-          <div className="carouselWrapper">
-            <button
-              className="carouselBtn"
-              onClick={() => slideLeft(setFeaturedIndex, featuredIndex)}
-              disabled={featuredIndex === 0}
-            >
-              <ChevronLeft />
-            </button>
-
-            <div
-              className={`opportunityGrid ${
-                !loading && !error && opportunities.length === 0 ? "empty" : ""
-              }`}
-            >
-              {loading && <p>Loading opportunities...</p>}
-              {error && <p>{error}</p>}
-              {!loading && !error && opportunities.length === 0 && (
-                <div className="noOpportunities">
-                  <div className="noDataIcon">∅</div>
-                  <h3>No Opportunities Found</h3>
-                  <p>Try adjusting your search or filters.</p>
-                </div>
-              )}
-              {!loading &&
-                !error &&
-                opportunities.length > 0 &&
-                opportunities
-                  .slice(featuredIndex, featuredIndex + cardsToShow)
-                  .map((item) => (
-                    <OpportunityCard key={item._id} opportunity={item} />
-                  ))}
-            </div>
-
-            <button
-              className="carouselBtn"
-              onClick={() =>
-                slideRight(
-                  setFeaturedIndex,
-                  featuredIndex,
-                  opportunities.length
-                )
-              }
-              disabled={featuredIndex >= opportunities.length - cardsToShow}
-            >
-              <ChevronRight />
-            </button>
+          <div className="sectionHeader">
+            <h2 className="sectionTitle">Explore Opportunities</h2>
+            <p className="sectionSubtitle">
+              Find and sign up for volunteering events near you.
+            </p>
           </div>
-        </section>
 
-        {/*All Opportunities*/}
-        <section>
-          <h2 className="sectionTitle">All Opportunities</h2>
-
-          <div className="carouselWrapper">
-            <button
-              className="carouselBtn"
-              onClick={() => slideLeft(setAllIndex, allIndex)}
-              disabled={allIndex === 0}
-            >
-              <ChevronLeft />
-            </button>
-
-            <div
-              className={`opportunityGrid ${
-                !loading && !error && opportunities.length === 0 ? "empty" : ""
-              }`}
-            >
-              {loading && <p>Loading opportunities...</p>}
-              {error && <p>{error}</p>}
-              {!loading && !error && opportunities.length === 0 && (
-                <div className="noOpportunities">
-                  <div className="noDataIcon">∅</div>
-                  <h3>No Opportunities Right Now</h3>
-                  <p>
-                    We couldn't find any opportunities matching your criteria.
-                  </p>
-                </div>
-              )}
-              {!loading &&
-                !error &&
-                opportunities.length > 0 &&
-                opportunities
-                  .slice(allIndex, allIndex + cardsToShow)
-                  .map((item) => (
-                    <OpportunityCard key={item._id} opportunity={item} />
-                  ))}
-            </div>
-
-            <button
-              className="carouselBtn"
-              onClick={() =>
-                slideRight(setAllIndex, allIndex, opportunities.length)
-              }
-              disabled={allIndex >= opportunities.length - cardsToShow}
-            >
-              <ChevronRight />
-            </button>
+          <div
+            className={`opportunityGrid ${
+              !loading && !error && opportunities.length === 0 ? "empty" : ""
+            }`}
+          >
+            {loading && <p>Loading opportunities...</p>}
+            {error && <p>{error}</p>}
+            {!loading && !error && opportunities.length === 0 && (
+              <div className="noOpportunities">
+                <div className="noDataIcon">∅</div>
+                <h3>No Opportunities Found</h3>
+                <p>Try adjusting your search or filters.</p>
+              </div>
+            )}
+            {!loading &&
+              !error &&
+              opportunities.length > 0 &&
+              opportunities.map((item) => (
+                <OpportunityCard key={item._id} opportunity={item} />
+              ))}
           </div>
+
+          {/* Pagination Controls */}
+          {!loading && !error && totalPages > 1 && (
+            <div className="paginationWrapper">
+              <button
+                className="pageBtn"
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page === 1}
+              >
+                <ChevronLeft size={16} /> Previous
+              </button>
+              <span className="pageInfo">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                className="pageBtn"
+                onClick={() => handlePageChange(page + 1)}
+                disabled={page === totalPages}
+              >
+                Next <ChevronRight size={16} />
+              </button>
+            </div>
+          )}
         </section>
       </div>
     </div>
