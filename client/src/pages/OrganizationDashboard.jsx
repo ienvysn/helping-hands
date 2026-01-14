@@ -55,7 +55,7 @@ const OrganizationDashboard = () => {
       navigate("/dashboard");
     }
 
-    setOrganizationName("Brad Pitt");
+    setOrganizationName("profile" in user ? user.profile.name : "Organization");
 
     // Fetch opportunities from backend
     const fetchOpportunities = async () => {
@@ -525,7 +525,7 @@ const handleOpenEdit = (event) => {
             <button className="notificationBtn">
               <Bell size={20} />
             </button>
-            <div className="userProfile" onClick={() => navigate('/profile')}>
+            <div className="userProfile" onClick={() => navigate('/organization-profile')}>
               <User size={20} />
               <span className="user-name">{organizationName}</span>
             </div>

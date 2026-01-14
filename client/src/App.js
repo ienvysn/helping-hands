@@ -8,6 +8,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/VolunteerProfile";
 import VolDashboard from "./pages/VolunteerDashbaord";
 import OrganizationDashboard from "./pages/OrganizationDashboard";
+import OrganizationProfile from "./pages/OrganizationProfile";
 import Notification from "./pages/Notification";
 import MyEvents from "./pages/MyEvents"; 
 
@@ -36,6 +37,7 @@ function App() {
           <Route path="/opportunities" element={<VolunteerOpportunity />} />
           <Route path="/my-events" element={<MyEvents />} />
           <Route path="/notifications" element={<Notification />} />
+          <Route path="/organization-profile" element={<OrganizationProfile />} />
           <Route
             path="/organization-dashboard"
             element={<OrganizationDashboard />}
