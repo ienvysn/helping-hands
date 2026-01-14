@@ -26,11 +26,11 @@ const createOpportunitySchema = z.object({
     message: "Event date must be in the future",
   }),
   startTime: z.string().optional(),
-  durationHours: z.number().positive("Duration must be positive").optional(),
-  opportunityType: z.enum(["on-site", "remote", "hybrid"]).optional(),
+  durationHours: z.number().positive("Duration must be positive").nullable().optional(),
+  opportunityType: z.enum(["on-site", "remote"]).optional(),
   cause: z.string().optional(),
   location: z.string().optional(),
-  maxVolunteers: z.number().int().positive().optional(),
+  maxVolunteers: z.number().int().positive().nullable().optional(),
 });
 
 const updateOpportunitySchema = createOpportunitySchema.partial();
