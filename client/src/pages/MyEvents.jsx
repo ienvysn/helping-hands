@@ -7,7 +7,7 @@ import "../style/MyEvents.css";
 const MyEvents = () => {
   const navigate = useNavigate();
   const [displayName, setDisplayName] = useState("Volunteer");
-  const [activeTab, setActiveTab] = useState("upcoming");
+  const [activeTab, setActiveTab] = useState("past");
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);

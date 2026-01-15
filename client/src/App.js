@@ -16,6 +16,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import EventDetail from "./pages/EventDetail";
 import VolunteerOpportunity from "./pages/VolunteerOpportunity";
+import AllReviews from "./pages/AllReviews";
 
 function App() {
   return (
@@ -37,8 +38,9 @@ function App() {
           <Route path="/opportunities" element={<VolunteerOpportunity />} />
           <Route path="/my-events" element={<MyEvents />} />
           <Route path="/notifications" element={<Notification />} />
+          <Route path="/all-reviews" element={<AllReviews />} />
           <Route path="/organization-profile" element={<OrganizationProfile />} />
-          <Route
+          <Route 
             path="/organization-dashboard"
             element={<OrganizationDashboard />}
           />
