@@ -39,6 +39,9 @@ const OrganizationDashboard = () => {
   const [attendance, setAttendance] = useState({});
   const [loadingSignups, setLoadingSignups] = useState(false);
 
+  const [reviews, setReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+
   // Check authentication and user type
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -73,9 +76,74 @@ const OrganizationDashboard = () => {
         console.error("Error fetching opportunities:", error);
       }
     };
+    const fetchReviews = async () => {
+  try {
+    setLoadingReviews(true);
+    const token = localStorage.getItem("token");
+    
+    // First get organization profile to get organization ID
+    const profileRes = await fetch("http://localhost:5000/api/user/profile", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const profileData = await profileRes.json();
+    
+    if (!profileData.success || !profileData.data.profile) {
+      console.error("Failed to get organization profile");
+      setLoadingReviews(false);
+      return;
+    }
+
+    const organizationId = profileData.data.profile._id;
+
+    // Fetch reviews for this organization
+    const reviewsRes = await fetch(
+      `http://localhost:5000/api/reviews/organization/${organizationId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    const reviewsData = await reviewsRes.json();
+
+    if (reviewsData.success) {
+      // Get only the most recent 2 reviews for dashboard display
+      setReviews(reviewsData.data.slice(0, 2) || []);
+    }
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+  } finally {
+    setLoadingReviews(false);
+  }
+};
+
 
     fetchOpportunities();
+    fetchReviews();
   }, [navigate]);
+  const formatReviewDate = (dateString) => {
+  const now = new Date();
+  const reviewDate = new Date(dateString);
+  const diffTime = Math.abs(now - reviewDate);
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+  
+  if (diffDays === 0) {
+    if (diffHours === 0) {
+      return "Just now";
+    }
+    return `${diffHours} hours ago`;
+  } else if (diffDays === 1) {
+    return "Yesterday";
+  } else if (diffDays < 7) {
+    return `${diffDays} days ago`;
+  } else {
+    return reviewDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
+};
 
   const [formData, setFormData] = useState({
     title: "",
@@ -111,24 +179,7 @@ const OrganizationDashboard = () => {
     "Event Reached: 2000 lifetime volunteer hours by System",
   ];
 
-  const reviews = [
-    {
-      name: "Food Pantry Distribution",
-      rating: "4.7",
-      count: "12 responses",
-      comment:
-        "Volunteering here has been on my bucket list for a while now and I must say, it has been an absolute delight. The team is welcoming, the cause is inspiring, and the impact is real. Highly recommended for anyone looking to make a difference!",
-      date: "2 days ago",
-    },
-    {
-      name: "Food Pantry Distribution",
-      rating: "4.7",
-      count: "12 responses",
-      comment:
-        "Volunteering here has been on my bucket list for a while now and I must say, it has been an absolute...",
-      date: "7 hours ago",
-    },
-  ];
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -610,9 +661,9 @@ const handleOpenEdit = (event) => {
             <div className="content-card">
               <div className="card-header">
                 <h2 className="card-title">Reviews</h2>
-                <a href="#" className="view-all-link">
+                <Link to="/all-reviews" className="view-all-link">
                   View All Reviews
-                </a>
+                </Link>
               </div>
               <div className="filter-tabs">
                 <button className="filter-tab active">All reviews</button>
@@ -620,17 +671,39 @@ const handleOpenEdit = (event) => {
                 <button className="filter-tab">Orientation</button>
               </div>
               <div className="reviews-list">
-                {reviews.map((review, idx) => (
-                  <div key={idx} className="review-item">
-                    <div className="review-header">
-                      <span className="review-name">{review.name}</span>
-                      <span className="review-rating">⭐ {review.rating}</span>
-                      <span className="review-count">• {review.count}</span>
-                    </div>
-                    <p className="review-comment">{review.comment}</p>
-                    <span className="review-date">{review.date}</span>
+                {loadingReviews ? (
+                  <div style={{ textAlign: "center", padding: "2rem", color: "#6b7280" }}>
+                    Loading reviews...
                   </div>
-                ))}
+                ) : reviews.length === 0? (
+                  <div style={{ textAlign: "center", padding: "2rem", color: "#6b7280" }}>
+                    No reviews yet
+                   </div> 
+                ) : (
+                  reviews.map((review, idx) => (
+                    <div key={review._id || idx} className="review-item">
+                      <div className="review-header">
+                        <span className="review-name">
+                          {review.opportunityId?.title || "Event"}
+                        </span>
+                        <span className="review-rating">
+                          ⭐ {review.rating || 0}
+                        </span>
+                        <span className="review-count">
+                          • by {review.volunteerId?.displayName || "Volunteer"}
+                        </span>
+                    </div>
+                    <p className="review-comment">
+                      {review.comment.length > 150
+                         ? review.comment.substring(0, 150) + "..."
+                         : review.comment}
+                    </p>
+                    <span className="review-date">
+                        {formatReviewDate(review.createdAt)}
+                    </span>
+                  </div>
+                ))
+              )}
               </div>
             </div>
           </div>
