@@ -28,11 +28,11 @@ const OrganizationDashboard = () => {
   const [organizationName, setOrganizationName] = useState("Organization");
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  
+
   // View state: 'dashboard' | 'attendance' | 'markAttendance'
   const [currentView, setCurrentView] = useState("dashboard");
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
-  
+
   // Attendance data
   const [signups, setSignups] = useState([]);
   const [activeTab, setActiveTab] = useState("pending");
@@ -445,14 +445,14 @@ const handleOpenEdit = (event) => {
 
   const handleOpenMarkAttendance = () => {
     const confirmedSignups = signups.filter((s) => s.status === "confirmed");
-    
+
     // Initialize attendance state
     const initialAttendance = {};
     confirmedSignups.forEach((signup) => {
       initialAttendance[signup._id] = false;
     });
     setAttendance(initialAttendance);
-    
+
     setCurrentView("markAttendance");
   };
 
@@ -544,7 +544,7 @@ const handleOpenEdit = (event) => {
     const spotsRemaining = selectedOpportunity?.maxVolunteers
       ? selectedOpportunity.maxVolunteers - confirmedCount
       : "∞";
-    
+
     return { pendingCount, confirmedCount, spotsRemaining };
   };
 
@@ -553,7 +553,7 @@ const handleOpenEdit = (event) => {
     const confirmedSignups = signups.filter((s) => s.status === "confirmed");
     const attendedCount = Object.values(attendance).filter((a) => a).length;
     const noShowCount = confirmedSignups.length - attendedCount;
-    
+
     return { total: confirmedSignups.length, attendedCount, noShowCount };
   };
 
@@ -569,7 +569,7 @@ const handleOpenEdit = (event) => {
               <Link to="/organization-dashboard" className="navLink">
                 <span className="navIcon">▦</span> Dashboard
               </Link>
-           
+
             </div>
           </div>
           <div className="navRight">
@@ -630,15 +630,15 @@ const handleOpenEdit = (event) => {
                       <span className="event-badge">{event.isActive ? "Active" : "Inactive"}</span>
                       <span className="event-volunteers">{event.volunteers || "0"} / {event.maxVolunteers || "∞"}</span>
                       <span className="event-views">0</span>
-                      <button 
-                        className="icon-action-btn" 
+                      <button
+                        className="icon-action-btn"
                         title="View Attendance"
                         onClick={() => handleViewAttendance(event)}
                       >
                         <ChevronRight size={16} />
                       </button>
-                      <button 
-                        className="icon-action-btn" 
+                      <button
+                        className="icon-action-btn"
                         title="Edit"
                         onClick={() => handleOpenEdit(event)}
                       >
@@ -946,9 +946,7 @@ const handleOpenEdit = (event) => {
                       placeholder="Leave empty for unlimited"
                       min="1"
                     />
-                    <small className="form-hint">
-                      Leave blank for unlimited capacity
-                    </small>
+
                   </div>
                 </div>
 
@@ -966,7 +964,7 @@ const handleOpenEdit = (event) => {
   // RENDER ATTENDANCE VIEW
   if (currentView === "attendance") {
     const { pendingCount, confirmedCount, spotsRemaining } = getAttendanceStats();
-    
+
     return (
       <div className="dashboard-wrapper">
         {/* Navbar */}
