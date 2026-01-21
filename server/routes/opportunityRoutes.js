@@ -12,6 +12,7 @@ const {
   confirmOneSignup,
   rejectOneSignup,
   markAttendance,
+  getOrganizationStats,
 } = require("../controller/opportunityController");
 const { isAuthenticated, isOrganization } = require("../middleware/auth");
 
@@ -34,6 +35,7 @@ router.post(
   createOpportunity
 );
 router.get("/my/list", isAuthenticated, isOrganization, getMyOpportunities);
+router.get('/my/stats', isAuthenticated, isOrganization, getOrganizationStats);
 router.put(
   "/:id",
   isAuthenticated,
