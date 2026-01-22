@@ -11,6 +11,7 @@ const signupRoutes = require("./routes/signupRoute");
 const reviewRoutes = require("./routes/reviewRoutes")
 const notificationRoutes= require("./routes/notificationRoutes")
 
+
 require("./utils/passport");
 
 const app = express();
@@ -25,6 +26,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
+
+app.use("/images", express.static("../client/public/images"));
 
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");

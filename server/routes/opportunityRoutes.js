@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../middleware/upload");
 const {
   createOpportunity,
   getAllOpportunities,
@@ -30,6 +31,7 @@ router.post(
   "/",
   isAuthenticated,
   isOrganization,
+  upload.single('image'),
   validate(createOpportunitySchema),
   createOpportunity
 );
@@ -38,6 +40,7 @@ router.put(
   "/:id",
   isAuthenticated,
   isOrganization,
+  upload.single('image'),
   validate(updateOpportunitySchema),
   updateOpportunity
 );

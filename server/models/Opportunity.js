@@ -42,6 +42,10 @@ const opportunitySchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    imageUrl: {
+      type: String,
+      default: "",
+    },
 
     durationHours: {
       type: Number,
