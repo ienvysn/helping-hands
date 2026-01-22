@@ -347,3 +347,74 @@
   color: white;
   transform: translateX(2px);
 }
+
+/* Responsive Design – Volunteer Dashboard */
+
+@media (max-width: 1024px) {
+  .dashboardContent {
+    padding: 1.5rem;
+  }
+
+  .summaryStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .navLeft,
+  .navMenu,
+  .navRight {
+    width: 100%;
+  }
+
+  .navMenu {
+    justify-content: space-around;
+  }
+
+  .navRight {
+    justify-content: flex-end;
+  }
+
+  .summaryLeft {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .summaryStats {
+    grid-template-columns: 1fr;
+  }
+
+  .achievementLevels {
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .eventCard {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .eventViewBtn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .navLogo {
+    font-size: 1.2rem;
+  }
+
+  .userProfile span {
+    display: none;
+  }
+
+  .sectionTitle {
+    font-size: 1.1rem;
+  }
+}
