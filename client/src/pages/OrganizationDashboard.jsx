@@ -613,9 +613,7 @@ const handleOpenEdit = (event) => {
               </div>
               <div className="filter-tabs">
                 <button className="filter-tab active">All events</button>
-                <button className="filter-tab">This month</button>
-                <button className="filter-tab">Status</button>
-                <button className="filter-tab">Volunteers</button>
+                
               </div>
               <div className="events-list">
                 {opportunities.map((event) => (
@@ -667,8 +665,7 @@ const handleOpenEdit = (event) => {
               </div>
               <div className="filter-tabs">
                 <button className="filter-tab active">All reviews</button>
-                <button className="filter-tab">This month</button>
-                <button className="filter-tab">Orientation</button>
+        
               </div>
               <div className="reviews-list">
                 {loadingReviews ? (
