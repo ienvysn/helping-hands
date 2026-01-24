@@ -42,6 +42,8 @@ const OrganizationDashboard = () => {
   const [reviews, setReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
 
+  const [orgStats, setOrgStats] = useState({ eventsOrganized: 0, totalVolunteers: 0, totalHours: 0, rating: '4.3' });
+
   // Check authentication and user type
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -77,73 +79,93 @@ const OrganizationDashboard = () => {
       }
     };
     const fetchReviews = async () => {
-  try {
-    setLoadingReviews(true);
-    const token = localStorage.getItem("token");
-    
-    // First get organization profile to get organization ID
-    const profileRes = await fetch("http://localhost:5000/api/user/profile", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const profileData = await profileRes.json();
-    
-    if (!profileData.success || !profileData.data.profile) {
-      console.error("Failed to get organization profile");
-      setLoadingReviews(false);
-      return;
-    }
+      try {
+        setLoadingReviews(true);
+        const token = localStorage.getItem("token");
 
-    const organizationId = profileData.data.profile._id;
+        // First get organization profile to get organization ID
+        const profileRes = await fetch("http://localhost:5000/api/user/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const profileData = await profileRes.json();
 
-    // Fetch reviews for this organization
-    const reviewsRes = await fetch(
-      `http://localhost:5000/api/reviews/organization/${organizationId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
+        if (!profileData.success || !profileData.data.profile) {
+          console.error("Failed to get organization profile");
+          setLoadingReviews(false);
+          return;
+        }
+
+        const organizationId = profileData.data.profile._id;
+
+        // Fetch reviews for this organization
+        const reviewsRes = await fetch(
+          `http://localhost:5000/api/reviews/organization/${organizationId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const reviewsData = await reviewsRes.json();
+
+        if (reviewsData.success) {
+          // Get only the most recent 2 reviews for dashboard display
+          setReviews(reviewsData.data.slice(0, 2) || []);
+        }
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      } finally {
+        setLoadingReviews(false);
       }
-    );
-
-    const reviewsData = await reviewsRes.json();
-
-    if (reviewsData.success) {
-      // Get only the most recent 2 reviews for dashboard display
-      setReviews(reviewsData.data.slice(0, 2) || []);
-    }
-  } catch (error) {
-    console.error("Error fetching reviews:", error);
-  } finally {
-    setLoadingReviews(false);
-  }
-};
+    };
 
 
     fetchOpportunities();
     fetchReviews();
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:5000/api/opportunities/my/stats', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data.success && data.data) {
+          setOrgStats({
+            eventsOrganized: data.data.eventsOrganized || 0,
+            totalVolunteers: data.data.totalVolunteers || 0,
+            totalHours: data.data.totalHours || 0,
+            rating: data.data.rating || 0,
+            totalReviews: data.data.totalReviews || 0,
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching org stats', err);
+      }
+    };
+
+    fetchStats();
   }, [navigate]);
   const formatReviewDate = (dateString) => {
-  const now = new Date();
-  const reviewDate = new Date(dateString);
-  const diffTime = Math.abs(now - reviewDate);
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-  
-  if (diffDays === 0) {
-    if (diffHours === 0) {
-      return "Just now";
+    const now = new Date();
+    const reviewDate = new Date(dateString);
+    const diffTime = Math.abs(now - reviewDate);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+
+    if (diffDays === 0) {
+      if (diffHours === 0) return "Just now";
+      return `${diffHours} hours ago`;
+    } else if (diffDays === 1) {
+      return "Yesterday";
+    } else if (diffDays < 7) {
+      return `${diffDays} days ago`;
+    } else {
+      return reviewDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
     }
-    return `${diffHours} hours ago`;
-  } else if (diffDays === 1) {
-    return "Yesterday";
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  } else {
-    return reviewDate.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  }
-};
+  };
 
   const [formData, setFormData] = useState({
     title: "",
@@ -163,10 +185,10 @@ const OrganizationDashboard = () => {
   const [opportunities, setOpportunities] = useState([]);
 
   const stats = [
-    { label: "Event Organized", value: "13", icon: Calendar, color: "#3B82F6" },
-    { label: "Total Volunteers", value: "4", icon: Users, color: "#10B981" },
-    { label: "Total Hours", value: "456", icon: Clock, color: "#F59E0B" },
-    { label: "Rating", value: "4.3", icon: Star, color: "#EF4444" },
+    { label: "Event Organized", value: orgStats.eventsOrganized, icon: Calendar, color: "#3B82F6" },
+    { label: "Total Volunteers", value: orgStats.totalVolunteers, icon: Users, color: "#10B981" },
+    { label: "Total Hours", value: orgStats.totalHours, icon: Clock, color: "#F59E0B" },
+    { label: "Rating", value: orgStats.rating, icon: Star, color: "#EF4444" },
   ];
 
   const recentActivity = [
@@ -179,7 +201,7 @@ const OrganizationDashboard = () => {
     "Event Reached: 2000 lifetime volunteer hours by System",
   ];
 
-  
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -345,26 +367,26 @@ const OrganizationDashboard = () => {
     }
   };
 
-// Open edit modal and prefill form
-const handleOpenEdit = (event) => {
-  setIsEditing(true);
-  setEditingId(event._id);
-  setFormData({
-    title: event.title || "",
-    description: event.description || "",
-    eventDate: event.eventDate ? new Date(event.eventDate).toISOString().split("T")[0] : "",
-    startTime: event.startTime || "",
-    endTime: event.endTime || "",
-    durationHours: event.durationHours || "",
-    opportunityType: event.opportunityType || "on-site",
-    cause: event.cause || "Other",
-    location: event.location || "",
-    tasks: event.tasks || "",
-    requirements: event.requirements || "",
-    maxVolunteers: event.maxVolunteers || "",
-  });
-  setShowModal(true);
-};
+  // Open edit modal and prefill form
+  const handleOpenEdit = (event) => {
+    setIsEditing(true);
+    setEditingId(event._id);
+    setFormData({
+      title: event.title || "",
+      description: event.description || "",
+      eventDate: event.eventDate ? new Date(event.eventDate).toISOString().split("T")[0] : "",
+      startTime: event.startTime || "",
+      endTime: event.endTime || "",
+      durationHours: event.durationHours || "",
+      opportunityType: event.opportunityType || "on-site",
+      cause: event.cause || "Other",
+      location: event.location || "",
+      tasks: event.tasks || "",
+      requirements: event.requirements || "",
+      maxVolunteers: event.maxVolunteers || "",
+    });
+    setShowModal(true);
+  };
 
   // ATTENDANCE FUNCTIONS
   const handleViewAttendance = async (opportunity) => {
@@ -607,55 +629,78 @@ const handleOpenEdit = (event) => {
             <div className="content-card">
               <div className="card-header">
                 <h2 className="card-title">Upcoming Events</h2>
-                <a href="#" className="view-all-link">
-                  View All
-                </a>
               </div>
               <div className="filter-tabs">
                 <button className="filter-tab active">All events</button>
-                
+
               </div>
               <div className="events-list">
-                {opportunities.map((event) => (
-                  <div key={event._id} className="event-item">
-                    <div className="event-info">
-                      <div className="event-title">{event.title}</div>
-                      <div className="event-date">
-                        {new Date(event.eventDate).toLocaleDateString()} {event.startTime}-{event.endTime}
+                {opportunities.map((event) => {
+                  const signedUp =
+                    event.signedUpCount ??
+                    event.registeredVolunteers ??
+                    (Array.isArray(event.volunteers)
+                      ? event.volunteers.length
+                      : typeof event.volunteers === "number"
+                        ? event.volunteers
+                        : 0);
+
+                  return (
+                    <div key={event._id} className="event-item">
+                      <div className="event-info">
+                        <div className="event-title">{event.title}</div>
+                        <div className="event-date">
+                          {new Date(event.eventDate).toLocaleDateString()} {event.startTime}-{event.endTime}
+                        </div>
+                      </div>
+                      <div className="event-actions">
+                        <span className="event-volunteers">{signedUp} / {event.maxVolunteers ?? "∞"}</span>
+
+                        <button
+                          className="icon-action-btn"
+                          title="View Attendance"
+                          onClick={() => handleViewAttendance(event)}
+                        >
+                          <ChevronRight size={16} />
+                        </button>
+                        <button
+                          className="icon-action-btn"
+                          title="Edit"
+                          onClick={() => handleOpenEdit(event)}
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          className="icon-action-btn delete"
+                          title="Delete"
+                          onClick={() => handleDelete(event._id)}
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
                     </div>
-                    <div className="event-actions">
-                      <span className="event-badge">{event.isActive ? "Active" : "Inactive"}</span>
-                      <span className="event-volunteers">{event.volunteers || "0"} / {event.maxVolunteers || "∞"}</span>
-                      <span className="event-views">0</span>
-                      <button
-                        className="icon-action-btn"
-                        title="View Attendance"
-                        onClick={() => handleViewAttendance(event)}
-                      >
-                        <ChevronRight size={16} />
-                      </button>
-                      <button
-                        className="icon-action-btn"
-                        title="Edit"
-                        onClick={() => handleOpenEdit(event)}
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        className="icon-action-btn delete"
-                        title="Delete"
-                        onClick={() => handleDelete(event._id)}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
-            {/* Reviews */}
+            {/* Reviews removed from left column — moved to right column for balance */}
+          </div>
+
+          {/* Right Column */}
+          <div className="right-column">
+            {/* Quick Actions */}
+            <div className="content-card">
+              <div className="card-header">
+                <h2 className="card-title">Quick actions</h2>
+              </div>
+              <button onClick={() => { setIsEditing(false); setEditingId(null); setFormData({ title: "", description: "", eventDate: "", startTime: "", endTime: "", durationHours: "", opportunityType: "on-site", cause: "Other", location: "", tasks: "", requirements: "", maxVolunteers: "" }); setShowModal(true); }} className="primary-btn">
+                <Plus size={18} /> Create event
+              </button>
+              <button className="secondary-btn">Add volunteer</button>
+            </div>
+
+            {/* Reviews (moved here for visual balance) */}
             <div className="content-card">
               <div className="card-header">
                 <h2 className="card-title">Reviews</h2>
@@ -665,17 +710,16 @@ const handleOpenEdit = (event) => {
               </div>
               <div className="filter-tabs">
                 <button className="filter-tab active">All reviews</button>
-        
               </div>
               <div className="reviews-list">
                 {loadingReviews ? (
                   <div style={{ textAlign: "center", padding: "2rem", color: "#6b7280" }}>
                     Loading reviews...
                   </div>
-                ) : reviews.length === 0? (
+                ) : reviews.length === 0 ? (
                   <div style={{ textAlign: "center", padding: "2rem", color: "#6b7280" }}>
                     No reviews yet
-                   </div> 
+                  </div>
                 ) : (
                   reviews.map((review, idx) => (
                     <div key={review._id || idx} className="review-item">
@@ -689,50 +733,19 @@ const handleOpenEdit = (event) => {
                         <span className="review-count">
                           • by {review.volunteerId?.displayName || "Volunteer"}
                         </span>
-                    </div>
-                    <p className="review-comment">
-                      {review.comment.length > 150
-                         ? review.comment.substring(0, 150) + "..."
-                         : review.comment}
-                    </p>
-                    <span className="review-date">
+                      </div>
+                      <p className="review-comment">
+                        {review.comment.length > 150
+                          ? review.comment.substring(0, 150) + "..."
+                          : review.comment}
+                      </p>
+                      <span className="review-date">
                         {formatReviewDate(review.createdAt)}
-                    </span>
-                  </div>
-                ))
-              )}
+                      </span>
+                    </div>
+                  ))
+                )}
               </div>
-            </div>
-          </div>
-
-          {/* Right Column */}
-          <div className="right-column">
-            {/* Recent Activity */}
-            <div className="content-card">
-              <div className="card-header">
-                <h2 className="card-title">Recent activity</h2>
-                <a href="#" className="view-all-link">
-                  View All
-                </a>
-              </div>
-              <div className="activity-list">
-                {recentActivity.map((activity, idx) => (
-                  <div key={idx} className="activity-item">
-                    {activity}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="content-card">
-              <div className="card-header">
-                <h2 className="card-title">Quick actions</h2>
-              </div>
-              <button onClick={() => { setIsEditing(false); setEditingId(null); setFormData({ title: "", description: "", eventDate: "", startTime: "", endTime: "", durationHours: "", opportunityType: "on-site", cause: "Other", location: "", tasks: "", requirements: "", maxVolunteers: "" }); setShowModal(true); }} className="primary-btn">
-                <Plus size={18} /> Create event
-              </button>
-              <button className="secondary-btn">Add volunteer</button>
             </div>
           </div>
         </div>
@@ -1006,9 +1019,8 @@ const handleOpenEdit = (event) => {
               <div className="event-detail-left">
                 <h1 className="event-detail-title">{selectedOpportunity?.title}</h1>
                 <span
-                  className={`event-status-badge ${
-                    selectedOpportunity?.isActive ? "active" : "inactive"
-                  }`}
+                  className={`event-status-badge ${selectedOpportunity?.isActive ? "active" : "inactive"
+                    }`}
                 >
                   {selectedOpportunity?.isActive ? "Active" : "Inactive"}
                 </span>
@@ -1260,9 +1272,8 @@ const handleOpenEdit = (event) => {
                 confirmedSignups.map((signup) => (
                   <div
                     key={signup._id}
-                    className={`attendance-check-item ${
-                      attendance[signup._id] ? "checked" : ""
-                    }`}
+                    className={`attendance-check-item ${attendance[signup._id] ? "checked" : ""
+                      }`}
                     onClick={() => toggleAttendance(signup._id)}
                   >
                     <div className="checkbox-container">

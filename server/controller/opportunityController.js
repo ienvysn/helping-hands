@@ -327,7 +327,19 @@ const getMyOpportunities = async (req, res) => {
     const opportunities = await Opportunity.find(filter)
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(parseInt(limit))
+      .lean();
+
+    // Attach signedUpCount for each opportunity (pending + confirmed)
+    const opportunitiesWithCounts = await Promise.all(
+      opportunities.map(async (op) => {
+        const count = await Signup.countDocuments({
+          opportunityId: op._id,
+          status: { $in: ["pending", "confirmed"] },
+        });
+        return { ...op, signedUpCount: count };
+      })
+    );
 
     // Get total count
     const total = await Opportunity.countDocuments(filter);
@@ -335,7 +347,7 @@ const getMyOpportunities = async (req, res) => {
     res.json({
       success: true,
       data: {
-        opportunities,
+        opportunities: opportunitiesWithCounts,
         pagination: {
           total,
           page: parseInt(page),
@@ -351,6 +363,51 @@ const getMyOpportunities = async (req, res) => {
       message: "Server error while fetching your opportunities",
       error: error.message,
     });
+  }
+};
+
+// Get organization dashboard stats: events organized, unique volunteers, total hours
+const getOrganizationStats = async (req, res) => {
+  try {
+    const organization = await Organization.findOne({ userId: req.user.id });
+    if (!organization) {
+      return res.status(404).json({ success: false, message: 'Organization profile not found' });
+    }
+
+    // Get opportunity ids for this organization
+    const opportunities = await Opportunity.find({ organizationId: organization._id }).select('_id durationHours');
+    const oppIds = opportunities.map((o) => o._id);
+
+    // Events organized
+    const eventsOrganized = await Opportunity.countDocuments({ organizationId: organization._id });
+
+    // Unique volunteers who have signed up (pending, confirmed, attended)
+    const uniqueVolunteers = await Signup.distinct('volunteerId', {
+      opportunityId: { $in: oppIds },
+      status: { $in: ['pending', 'confirmed', 'attended'] },
+    });
+
+    // Total hours completed (sum hoursAwarded for attended signups)
+    const hoursAgg = await Signup.aggregate([
+      { $match: { opportunityId: { $in: oppIds }, status: 'attended' } },
+      { $group: { _id: null, totalHours: { $sum: '$hoursAwarded' } } },
+    ]);
+
+    const totalHours = hoursAgg.length > 0 ? hoursAgg[0].totalHours : 0;
+
+    res.json({
+      success: true,
+      data: {
+        eventsOrganized,
+        totalVolunteers: uniqueVolunteers.length,
+        totalHours,
+        rating: organization.averageRating,
+        totalReviews: organization.totalReviews,
+      },
+    });
+  } catch (error) {
+    console.error('Get organization stats error:', error);
+    res.status(500).json({ success: false, message: 'Server error while fetching stats', error: error.message });
   }
 };
 
@@ -634,8 +691,7 @@ const markAttendance = async (req, res) => {
         // Only allow marking attendance for confirmed volunteers
         if (signup.status !== "confirmed") {
           errors.push(
-            `Volunteer ${
-              signup.volunteerId?.displayName || "Unknown"
+            `Volunteer ${signup.volunteerId?.displayName || "Unknown"
             } is not confirmed (Status: ${signup.status})`
           );
           continue;
@@ -743,5 +799,6 @@ module.exports = {
   rejectOneSignup,
   markAttendance,
   calculateLevel,
+  getOrganizationStats,
 };
 

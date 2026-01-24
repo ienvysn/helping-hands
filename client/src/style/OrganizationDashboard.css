@@ -199,7 +199,7 @@
 /* Main Content */
 .main-content {
   display: grid;
-  grid-template-columns: 1fr 360px;
+  grid-template-columns: 2fr 360px;
   gap: 1.5rem;
   padding: 0 0 2rem;
   max-width: 90%;

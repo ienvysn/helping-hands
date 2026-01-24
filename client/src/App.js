@@ -9,8 +9,9 @@ import Profile from "./pages/VolunteerProfile";
 import VolDashboard from "./pages/VolunteerDashbaord";
 import OrganizationDashboard from "./pages/OrganizationDashboard";
 import OrganizationProfile from "./pages/OrganizationProfile";
+import OrganizationRegistration from "./pages/OrganizationRegistration";
 import Notification from "./pages/Notification";
-import MyEvents from "./pages/MyEvents"; 
+import MyEvents from "./pages/MyEvents";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -40,7 +41,8 @@ function App() {
           <Route path="/notifications" element={<Notification />} />
           <Route path="/all-reviews" element={<AllReviews />} />
           <Route path="/organization-profile" element={<OrganizationProfile />} />
-          <Route 
+          <Route path="/organization-registration" element={<OrganizationRegistration />} />
+          <Route
             path="/organization-dashboard"
             element={<OrganizationDashboard />}
           />

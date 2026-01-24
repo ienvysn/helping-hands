@@ -69,6 +69,11 @@ const updateOrganizationProfile = async (req, res) => {
     contactPhone,
     website,
     address,
+    yearEstablished,
+    organizationSize,
+    categories,
+    socialMedia,
+    description,
   } = req.body;
 
   const profile = await Organization.findOne({ userId: req.user.id });
@@ -88,6 +93,11 @@ const updateOrganizationProfile = async (req, res) => {
   if (contactPhone !== undefined) profile.contactPhone = contactPhone;
   if (website !== undefined) profile.website = website;
   if (address !== undefined) profile.address = address;
+  if (yearEstablished !== undefined) profile.yearEstablished = yearEstablished;
+  if (organizationSize !== undefined) profile.organizationSize = organizationSize;
+  if (categories !== undefined) profile.categories = categories;
+  if (socialMedia !== undefined) profile.socialMedia = socialMedia;
+  if (description !== undefined) profile.description = description;
 
   await profile.save();
 

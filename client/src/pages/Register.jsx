@@ -6,7 +6,7 @@ const Register = () => {
   const navigate = useNavigate();
   const location = useLocation();
   // Default to volunteer if not specified
-  const userType = location.state?.userType || "volunteer";
+  const [userType, setUserType] = useState(location.state?.userType || "volunteer");
 
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
@@ -59,7 +59,7 @@ const Register = () => {
         localStorage.setItem("user", JSON.stringify(data.user));
         alert("Register successful!");
         if (data.user.userType === "organization") {
-          navigate("/organization-dashboard");
+          navigate("/organization-registration");
         } else {
           navigate("/dashboard");
         }
@@ -101,13 +101,48 @@ const Register = () => {
             Enter your username, email and password to get started
           </p>
 
+          <div className="user-type-toggle" style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+            <button
+              type="button"
+              onClick={() => setUserType('volunteer')}
+              style={{
+                flex: 1,
+                padding: '10px',
+                backgroundColor: userType === 'volunteer' ? '#1e4d8b' : '#e5e7eb',
+                color: userType === 'volunteer' ? 'white' : 'black',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}
+            >
+              Volunteer
+            </button>
+            <button
+              type="button"
+              onClick={() => setUserType('organization')}
+              style={{
+                flex: 1,
+                padding: '10px',
+                backgroundColor: userType === 'organization' ? '#1e4d8b' : '#e5e7eb',
+                color: userType === 'organization' ? 'white' : 'black',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}
+            >
+              Organization
+            </button>
+          </div>
+
           <form onSubmit={handleSubmit}>
             {/* Username */}
-            <label className="label">Username</label>
+            <label className="label">{userType === 'organization' ? 'Organization Name' : 'Username'}</label>
             <input
               className="input"
               type="text"
-              placeholder="Enter your username"
+              placeholder={userType === 'organization' ? 'Enter organization name' : 'Enter your username'}
               value={displayName}
               onChange={(e) => {
                 setDisplayName(e.target.value);
