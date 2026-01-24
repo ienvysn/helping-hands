@@ -23,45 +23,9 @@ function ResetPassword() {
     setError("");
     setSuccess(false);
 
-<<<<<<< HEAD
-    // Validation
+  
     if (!newPassword || !confirmPassword) {
       setError("Please fill in all fields");
-=======
-  
-
-  console.log("Submitting reset with token:", token);
-  setLoading(true);
-
-  try {
-    const response = await fetch(
-      "http://localhost:5000/api/auth/reset-password",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token: token,
-          newPassword: newPassword,
-        }),
-      }
-    );
-
-    const data = await response.json();
-    console.log("Reset password response:", data);
-
-    if (!response.ok) {
-    
-      
-      if (data.errors) {
-        setError(data.errors.join(", "));
-      } else {
-        setError(
-          data.message || "Failed to reset password. Please try again."
-        );
-      }
->>>>>>> 5202a86 (organization forget password)
       return;
     }
 
@@ -202,5 +166,6 @@ function ResetPassword() {
     </div>
   );
 }
+
 
 export default ResetPassword;
