@@ -66,6 +66,7 @@ const forgetPassword = async (req, res) => {
   }
 };
 
+
 const resetPassword = async (req, res) => {
   try {
     const { token, newPassword } = req.body;
