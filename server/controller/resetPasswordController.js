@@ -93,9 +93,20 @@ const resetPassword = async (req, res) => {
     }
 
     const salt = await bcrypt.genSalt(10);
+<<<<<<< HEAD
     user.passwordHash = await bcrypt.hash(newPassword, salt);
     user.resetPasswordToken = undefined;
     user.resetPasswordExpiry = undefined;
+=======
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    
+    user.passwordHash = hashedPassword;
+    
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpiry = undefined;
+    
+    
+>>>>>>> 5202a86 (organization forget password)
 
     await user.save();
 
