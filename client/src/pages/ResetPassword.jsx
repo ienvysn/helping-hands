@@ -16,7 +16,6 @@ function ResetPassword() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // Get token from URL query parameter
   const token = searchParams.get("token");
 
   const handleSubmit = async (e) => {
@@ -24,7 +23,7 @@ function ResetPassword() {
   setError("");
   setSuccess(false);
 
-  // ... validation code ...
+  
 
   console.log("Submitting reset with token:", token);
   setLoading(true);
@@ -48,7 +47,8 @@ function ResetPassword() {
     console.log("Reset password response:", data);
 
     if (!response.ok) {
-      // Backend validation errors
+    
+      
       if (data.errors) {
         setError(data.errors.join(", "));
       } else {
