@@ -401,6 +401,8 @@ const getOrganizationStats = async (req, res) => {
         eventsOrganized,
         totalVolunteers: uniqueVolunteers.length,
         totalHours,
+        rating: organization.averageRating,
+        totalReviews: organization.totalReviews,
       },
     });
   } catch (error) {
@@ -689,8 +691,7 @@ const markAttendance = async (req, res) => {
         // Only allow marking attendance for confirmed volunteers
         if (signup.status !== "confirmed") {
           errors.push(
-            `Volunteer ${
-              signup.volunteerId?.displayName || "Unknown"
+            `Volunteer ${signup.volunteerId?.displayName || "Unknown"
             } is not confirmed (Status: ${signup.status})`
           );
           continue;
