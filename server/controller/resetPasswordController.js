@@ -12,7 +12,6 @@ const validatePassword = (password) => {
 
   return errors;
 };
-
 const forgetPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -25,6 +24,9 @@ const forgetPassword = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
+    
+    console.log("Found user:", user ? `Yes (Type: ${user.userType})` : "No");
+    
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -37,6 +39,8 @@ const forgetPassword = async (req, res) => {
     user.resetPasswordToken = token;
     user.resetPasswordExpiry = Date.now() + 3600000;
     await user.save();
+    
+    console.log("Token saved for user:", user.email);
 
     const resetLink = `http://localhost:3000/reset-password?token=${token}`;
 
@@ -45,6 +49,8 @@ const forgetPassword = async (req, res) => {
       "Password Reset Request",
       `Click this link to reset your password: ${resetLink}\n\nThis link expires in 1 hour.`
     );
+    
+    console.log("Email sent to:", user.email);
 
     res.json({
       success: true,
@@ -92,10 +98,19 @@ const resetPassword = async (req, res) => {
       });
     }
 
+    // Hash the new password
     const salt = await bcrypt.genSalt(10);
-    user.passwordHash = await bcrypt.hash(newPassword, salt);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    
+    // Set the password hash
+    user.passwordHash = hashedPassword;
+    
+    // Clear the reset token fields
     user.resetPasswordToken = undefined;
     user.resetPasswordExpiry = undefined;
+    
+    // If user has googleId, they can now login with either Google or email/password
+    // No need to remove googleId
 
     await user.save();
 

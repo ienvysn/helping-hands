@@ -20,80 +20,59 @@ function ResetPassword() {
   const token = searchParams.get("token");
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess(false);
+  e.preventDefault();
+  setError("");
+  setSuccess(false);
 
-    // Validation
-    if (!newPassword || !confirmPassword) {
-      setError("Please fill in all fields");
-      return;
-    }
+  // ... validation code ...
 
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+  console.log("Submitting reset with token:", token);
+  setLoading(true);
 
-    if (newPassword.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
-
-    if (!/[0-9]/.test(newPassword)) {
-      setError("Password must contain at least one number");
-      return;
-    }
-
-    if (!token) {
-      setError("Invalid reset link. Please request a new password reset.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/auth/reset-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            token: token,
-            newPassword: newPassword,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        // Backend validation errors
-        if (data.errors) {
-          setError(data.errors.join(", "));
-        } else {
-          setError(
-            data.message || "Failed to reset password. Please try again."
-          );
-        }
-        return;
+  try {
+    const response = await fetch(
+      "http://localhost:5000/api/auth/reset-password",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: token,
+          newPassword: newPassword,
+        }),
       }
+    );
 
-      if (data.success) {
-        setSuccess(true);
-        alert("Password reset successful! Redirecting to login...");
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+    const data = await response.json();
+    console.log("Reset password response:", data);
+
+    if (!response.ok) {
+      // Backend validation errors
+      if (data.errors) {
+        setError(data.errors.join(", "));
+      } else {
+        setError(
+          data.message || "Failed to reset password. Please try again."
+        );
       }
-    } catch (err) {
-      setError("Failed to reset password. Please try again.");
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
+
+    if (data.success) {
+      setSuccess(true);
+      alert("Password reset successful! Redirecting to login...");
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    }
+  } catch (err) {
+    console.error("Reset error:", err);
+    setError("Failed to reset password. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="reset-password-wrapper">
       <div className="reset-password-modal">
