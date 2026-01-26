@@ -26,7 +26,7 @@ const createOpportunitySchema = z.object({
     message: "Event date must be in the future",
   }),
   startTime: z.string().optional(),
-  durationHours: z.number().positive("Duration must be positive").nullable().optional(),
+  durationHours: z.coerce.number().min(0).optional(),
   opportunityType: z.enum(["on-site", "remote"]).optional(),
   cause: z.string().optional(),
   location: z.string().optional(),

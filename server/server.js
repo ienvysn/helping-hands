@@ -26,8 +26,11 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
+app.use("/images", express.static("../client/public/images"));
+
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+
 
 app.use(helmet());
 
@@ -61,6 +64,7 @@ app.use("/api/opportunities", opportunityRoutes);
 app.use("/api/signups", signupRoutes);
 app.use("/api/reviews", reviewRoutes)
 app.use("/api/notifications",notificationRoutes)
+
 
 
 

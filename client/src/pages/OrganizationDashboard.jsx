@@ -28,6 +28,7 @@ const OrganizationDashboard = () => {
   const [organizationName, setOrganizationName] = useState("Organization");
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
   // View state: 'dashboard' | 'attendance' | 'markAttendance'
   const [currentView, setCurrentView] = useState("dashboard");
@@ -180,6 +181,7 @@ const OrganizationDashboard = () => {
     tasks: "",
     requirements: "",
     maxVolunteers: "",
+    imageUrl: "",
   });
 
   const [opportunities, setOpportunities] = useState([]);
@@ -278,6 +280,7 @@ const OrganizationDashboard = () => {
             tasks: "",
             requirements: "",
             maxVolunteers: "",
+            imageUrl: "",
           });
         } else {
           if (data.errors && Array.isArray(data.errors)) {
@@ -321,6 +324,7 @@ const OrganizationDashboard = () => {
           tasks: "",
           requirements: "",
           maxVolunteers: "",
+          imageUrl: "",
         });
       } else {
         if (data.errors && Array.isArray(data.errors)) {
@@ -384,6 +388,8 @@ const OrganizationDashboard = () => {
       tasks: event.tasks || "",
       requirements: event.requirements || "",
       maxVolunteers: event.maxVolunteers || "",
+      imageUrl: event.imageUrl || "",
+
     });
     setShowModal(true);
   };
@@ -694,7 +700,7 @@ const OrganizationDashboard = () => {
               <div className="card-header">
                 <h2 className="card-title">Quick actions</h2>
               </div>
-              <button onClick={() => { setIsEditing(false); setEditingId(null); setFormData({ title: "", description: "", eventDate: "", startTime: "", endTime: "", durationHours: "", opportunityType: "on-site", cause: "Other", location: "", tasks: "", requirements: "", maxVolunteers: "" }); setShowModal(true); }} className="primary-btn">
+              <button onClick={() => { setIsEditing(false); setEditingId(null); setFormData({ title: "", description: "", eventDate: "", startTime: "", endTime: "", durationHours: "", opportunityType: "on-site", cause: "Other", location: "", tasks: "", requirements: "", maxVolunteers: "" , imageUrl: ""}); setShowModal(true); }} className="primary-btn">
                 <Plus size={18} /> Create event
               </button>
               <button className="secondary-btn">Add volunteer</button>
@@ -774,6 +780,7 @@ const OrganizationDashboard = () => {
                 <div className="form-section">
                   <h3 className="section-title">Basic Information</h3>
 
+
                   <div className="form-group">
                     <label className="form-label">Title *</label>
                     <input
@@ -799,6 +806,20 @@ const OrganizationDashboard = () => {
                       rows="4"
                       maxLength={2000}
                       required
+                    />
+                  </div>
+                  <div className="form-group">
+
+
+
+                    <label className="form-label">Opportunity Image</label>
+
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="form-input"
+                      onChange={(e) => setImageFile(e.target.files[0])}
                     />
                   </div>
                 </div>

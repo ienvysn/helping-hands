@@ -1,8 +1,11 @@
+
+
 const Opportunity = require("../models/Opportunity");
 const Organization = require("../models/Organization");
 const Signup = require("../models/Signup");
 const { createNotification } = require("../utils/notificationHelper");
 const VolunteerProfile = require("../models/Volunteer");
+
 
 const createOpportunity = async (req, res) => {
   try {
@@ -20,6 +23,9 @@ const createOpportunity = async (req, res) => {
       maxVolunteers,
     } = req.body;
 
+    // Handle Multer image file path
+    const imageUrl = req.file ? `/images/${req.file.filename}` : "";
+
     const eventDateObj = new Date(eventDate);
 
     const organization = await Organization.findOne({ userId: req.user.id });
@@ -30,7 +36,7 @@ const createOpportunity = async (req, res) => {
       });
     }
 
-    // Create opportunity
+    // Create opportunity (Using Number() to parse strings from FormData)
     const opportunity = await Opportunity.create({
       organizationId: organization._id,
       title,
@@ -39,13 +45,13 @@ const createOpportunity = async (req, res) => {
       requirements: requirements || "",
       eventDate: eventDateObj,
       startTime: startTime || "",
-
-      durationHours: durationHours || 0,
+      durationHours: durationHours ? Number(durationHours) : 0,
       opportunityType: opportunityType || "on-site",
       cause: cause || "Other",
       location: location || "",
-      maxVolunteers: maxVolunteers || null,
+      maxVolunteers: maxVolunteers ? Number(maxVolunteers) : null,
       isActive: true,
+      imageUrl: imageUrl,
     });
 
     res.status(201).json({
@@ -81,6 +87,7 @@ const getAllOpportunities = async (req, res) => {
     } = req.query;
 
     const filter = { isActive: true };
+    
 
     // Search by title, description, or tasks
     if (search) {
@@ -104,40 +111,26 @@ const getAllOpportunities = async (req, res) => {
     // Filter by date range
     if (startDate || endDate) {
       filter.eventDate = {};
-      if (startDate) {
-        filter.eventDate.$gte = new Date(startDate);
-      }
-      if (endDate) {
-        filter.eventDate.$lte = new Date(endDate);
-      }
+      if (startDate) filter.eventDate.$gte = new Date(startDate);
+      if (endDate) filter.eventDate.$lte = new Date(endDate);
     }
 
-    // Filter by duration hours
     if (minHours || maxHours) {
       filter.durationHours = {};
-      if (minHours) {
-        filter.durationHours.$gte = parseInt(minHours);
-      }
-      if (maxHours) {
-        filter.durationHours.$lte = parseInt(maxHours);
-      }
+      if (minHours) filter.durationHours.$gte = parseInt(minHours);
+      if (maxHours) filter.durationHours.$lte = parseInt(maxHours);
     }
 
-    // Build sort object
     const sort = {};
     sort[sortBy] = order === "desc" ? -1 : 1;
-
-    // Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    // Execute query
     const opportunities = await Opportunity.find(filter)
       .populate("organizationId", "organizationName logoUrl averageRating")
       .sort(sort)
       .skip(skip)
       .limit(parseInt(limit));
 
-    // Get total count for pagination
     const total = await Opportunity.countDocuments(filter);
 
     res.json({
@@ -162,11 +155,9 @@ const getAllOpportunities = async (req, res) => {
   }
 };
 
-// Get single opportunity by ID (Public)
 const getOpportunityById = async (req, res) => {
   try {
     const { id } = req.params;
-
     const opportunity = await Opportunity.findById(id).populate(
       "organizationId",
       "organizationName logoUrl averageRating mission contactEmail contactPhone website address"
@@ -179,10 +170,7 @@ const getOpportunityById = async (req, res) => {
       });
     }
 
-    res.json({
-      success: true,
-      data: opportunity,
-    });
+    res.json({ success: true, data: opportunity });
   } catch (error) {
     console.error("Get opportunity error:", error);
     res.status(500).json({
@@ -193,7 +181,6 @@ const getOpportunityById = async (req, res) => {
   }
 };
 
-// Organization only - must own it)
 const updateOpportunity = async (req, res) => {
   try {
     const { id } = req.params;
@@ -204,7 +191,6 @@ const updateOpportunity = async (req, res) => {
       requirements,
       eventDate,
       startTime,
-
       durationHours,
       opportunityType,
       cause,
@@ -213,16 +199,11 @@ const updateOpportunity = async (req, res) => {
       isActive,
     } = req.body;
 
-    // Find opportunity
     const opportunity = await Opportunity.findById(id);
     if (!opportunity) {
-      return res.status(404).json({
-        success: false,
-        message: "Opportunity not found",
-      });
+      return res.status(404).json({ success: false, message: "Opportunity not found" });
     }
 
-    // Verify ownership
     const organization = await Organization.findOne({ userId: req.user.id });
     if (!organization || !opportunity.organizationId.equals(organization._id)) {
       return res.status(403).json({
@@ -231,23 +212,27 @@ const updateOpportunity = async (req, res) => {
       });
     }
 
-    // Update fields
+    // Handle new image file if uploaded
+    if (req.file) {
+      opportunity.imageUrl = `/images/${req.file.filename}`;
+    }
+
+    // Update fields and parse strings to numbers
     if (title !== undefined) opportunity.title = title;
     if (description !== undefined) opportunity.description = description;
     if (tasks !== undefined) opportunity.tasks = tasks;
     if (requirements !== undefined) opportunity.requirements = requirements;
     if (eventDate !== undefined) opportunity.eventDate = new Date(eventDate);
     if (startTime !== undefined) opportunity.startTime = startTime;
-
-    if (durationHours !== undefined) opportunity.durationHours = durationHours;
-    if (opportunityType !== undefined)
-      opportunity.opportunityType = opportunityType;
+    if (durationHours !== undefined) opportunity.durationHours = Number(durationHours);
+    if (opportunityType !== undefined) opportunity.opportunityType = opportunityType;
     if (cause !== undefined) opportunity.cause = cause;
     if (location !== undefined) opportunity.location = location;
-    if (maxVolunteers !== undefined) opportunity.maxVolunteers = maxVolunteers;
+    if (maxVolunteers !== undefined) opportunity.maxVolunteers = maxVolunteers ? Number(maxVolunteers) : null;
     if (isActive !== undefined) opportunity.isActive = isActive;
 
     await opportunity.save();
+
 
     res.json({
       success: true,
@@ -267,14 +252,9 @@ const updateOpportunity = async (req, res) => {
 const deleteOpportunity = async (req, res) => {
   try {
     const { id } = req.params;
-
-    // Find opportunity
     const opportunity = await Opportunity.findById(id);
     if (!opportunity) {
-      return res.status(404).json({
-        success: false,
-        message: "Opportunity not found",
-      });
+      return res.status(404).json({ success: false, message: "Opportunity not found" });
     }
 
     // Verify ownership
@@ -289,10 +269,7 @@ const deleteOpportunity = async (req, res) => {
     opportunity.isActive = false;
     await opportunity.save();
 
-    res.json({
-      success: true,
-      message: "Opportunity deleted successfully",
-    });
+    res.json({ success: true, message: "Opportunity deleted successfully" });
   } catch (error) {
     console.error("Delete opportunity error:", error);
     res.status(500).json({
@@ -306,23 +283,14 @@ const deleteOpportunity = async (req, res) => {
 const getMyOpportunities = async (req, res) => {
   try {
     const { page = 1, limit = 10, includeInactive = false } = req.query;
-
-    // Get organization profile
     const organization = await Organization.findOne({ userId: req.user.id });
     if (!organization) {
-      return res.status(404).json({
-        success: false,
-        message: "Organization profile not found",
-      });
+      return res.status(404).json({ success: false, message: "Organization profile not found" });
     }
 
-    // Build filter
     const filter = { organizationId: organization._id };
-    if (!includeInactive) {
-      filter.isActive = true;
-    }
+    if (!includeInactive) filter.isActive = true;
 
-    // Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const opportunities = await Opportunity.find(filter)
       .sort({ createdAt: -1 })
@@ -341,7 +309,6 @@ const getMyOpportunities = async (req, res) => {
       })
     );
 
-    // Get total count
     const total = await Opportunity.countDocuments(filter);
 
     res.json({
@@ -414,7 +381,6 @@ const getOrganizationStats = async (req, res) => {
 const getOpportunitySignups = async (req, res) => {
   try {
     const { opportunityId } = req.params;
-
     const signups = await Signup.find({
       opportunityId: opportunityId,
       status: { $in: ["pending", "confirmed"] },
@@ -422,11 +388,7 @@ const getOpportunitySignups = async (req, res) => {
       .populate({
         path: "volunteerId",
         select: "displayName profilePictureUrl totalHours aboutMe userId",
-        options: { virtuals: true },
-        populate: {
-          path: "userId",
-          select: "email createdAt",
-        },
+        populate: { path: "userId", select: "email createdAt" },
       })
       .sort({ signedUpAt: 1 });
 
@@ -448,7 +410,6 @@ const getOpportunitySignups = async (req, res) => {
 const confirmAllSignups = async (req, res) => {
   try {
     const { opportunityId } = req.params;
-
     const opportunity = await Opportunity.findById(opportunityId);
     if (!opportunity) {
       return res.status(404).json({
@@ -459,28 +420,15 @@ const confirmAllSignups = async (req, res) => {
 
     const organization = await Organization.findOne({ userId: req.user.id });
     if (!organization || !opportunity.organizationId.equals(organization._id)) {
-      return res.status(403).json({
-        success: false,
-        message: "You can only confirm in your own opportunities",
-      });
+      return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    const pendingSignups = await Signup.find({
-      opportunityId,
-      status: "pending",
-    }).populate("volunteerId");
-
-    const result = await Signup.updateMany(
+    const pendingSignups = await Signup.find({ opportunityId, status: "pending" }).populate("volunteerId");
+    await Signup.updateMany(
       { opportunityId, status: "pending" },
-      {
-        $set: {
-          status: "confirmed",
-          confirmedAt: new Date(),
-        },
-      }
+      { $set: { status: "confirmed", confirmedAt: new Date() } }
     );
 
-    // Notify all volunteers
     for (const signup of pendingSignups) {
       if (signup.volunteerId && signup.volunteerId.userId) {
         await createNotification(
@@ -522,6 +470,7 @@ const confirmOneSignup = async (req, res) => {
     }
 
     const organization = await Organization.findOne({ userId: req.user.id });
+
     if (!organization || !opportunity.organizationId.equals(organization._id)) {
       return res.status(403).json({
         success: false,
@@ -657,6 +606,7 @@ const markAttendance = async (req, res) => {
 
     // Verify ownership
     const organization = await Organization.findOne({ userId: req.user.id });
+
     if (!organization || !opportunity.organizationId.equals(organization._id)) {
       return res.status(403).json({
         success: false,
@@ -703,20 +653,20 @@ const markAttendance = async (req, res) => {
           const oldTotalHours = signup.volunteerId.totalHours;
           const oldLevel = calculateLevel(oldTotalHours);
 
-          signup.status = "attended";
-          signup.attended = true;
+        signup.status = "attended";
+        signup.attended = true;
           signup.confirmedAt = new Date();
-          signup.hoursAwarded = opportunity.durationHours;
-          await signup.save();
+        signup.hoursAwarded = opportunity.durationHours;
+        await signup.save();
 
-          signup.volunteerId.totalHours += signup.hoursAwarded;
-          await signup.volunteerId.save();
+        signup.volunteerId.totalHours += signup.hoursAwarded;
+        await signup.volunteerId.save();
 
           const newTotalHours = signup.volunteerId.totalHours;
           const newLevel = calculateLevel(newTotalHours);
 
           // Notification for hours confirmed
-          if (signup.volunteerId.userId) {
+        if (signup.volunteerId.userId) {
             await createNotification(
               signup.volunteerId.userId,
               "hours_confirmed",
@@ -725,20 +675,20 @@ const markAttendance = async (req, res) => {
             );
 
             // Notification for level up
-            if (newLevel > oldLevel) {
+          if (newLevel > oldLevel) {
               await createNotification(
                 signup.volunteerId.userId,
                 "level_up",
                 "Level Up!",
                 `Congratulations! You have reached Level ${newLevel}!`
               );
-            }
           }
+        }
 
-          confirmedCount++;
-        } else {
-          signup.status = "no-show";
-          signup.attended = false;
+        confirmedCount++;
+      } else {
+        signup.status = "no-show";
+        signup.attended = false;
           signup.hoursAwarded = 0;
           await signup.save();
 
@@ -751,8 +701,8 @@ const markAttendance = async (req, res) => {
               `Your attendance for "${opportunity.title}" was marked as no-show.`
             );
           }
-          noShowCount++;
-        }
+        noShowCount++;
+      }
       } catch (err) {
         errors.push(`Error processing signup ${item.signupId}: ${err.message}`);
       }
