@@ -30,7 +30,7 @@ const createOpportunitySchema = z.object({
   opportunityType: z.enum(["on-site", "remote"]).optional(),
   cause: z.string().optional(),
   location: z.string().optional(),
-  maxVolunteers: z.number().int().positive().nullable().optional(),
+  maxVolunteers: z.coerce.number().int().positive().nullable().optional(),
 });
 
 const updateOpportunitySchema = createOpportunitySchema.partial();

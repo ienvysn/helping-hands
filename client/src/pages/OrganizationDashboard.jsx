@@ -213,7 +213,8 @@ const OrganizationDashboard = () => {
     }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     // Validation
     if (!formData.title || !formData.description || !formData.eventDate) {
       alert("Please fill in all required fields (marked with *)");
@@ -227,34 +228,36 @@ const OrganizationDashboard = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const opportunityData = {
-        title: formData.title,
-        description: formData.description,
-        eventDate: formData.eventDate,
-        startTime: formData.startTime || "",
-        endTime: formData.endTime || "",
-        durationHours: formData.durationHours
-          ? parseFloat(formData.durationHours)
-          : 0,
-        opportunityType: formData.opportunityType,
-        cause: formData.cause,
-        location: formData.location || "",
-        tasks: formData.tasks || "",
-        requirements: formData.requirements || "",
-        maxVolunteers: formData.maxVolunteers
-          ? parseInt(formData.maxVolunteers)
-          : null,
-      };
+      const formDataToSend = new FormData();
+
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("eventDate", formData.eventDate);
+      formDataToSend.append("startTime", formData.startTime || "");
+      formDataToSend.append("endTime", formData.endTime || "");
+      formDataToSend.append("durationHours", formData.durationHours ? formData.durationHours : 0);
+      formDataToSend.append("opportunityType", formData.opportunityType);
+      formDataToSend.append("cause", formData.cause);
+      formDataToSend.append("location", formData.location || "");
+      formDataToSend.append("tasks", formData.tasks || "");
+      formDataToSend.append("requirements", formData.requirements || "");
+
+      if (formData.maxVolunteers) {
+          formDataToSend.append("maxVolunteers", formData.maxVolunteers);
+      }
+
+      if (imageFile) {
+        formDataToSend.append("image", imageFile);
+      }
 
       // If editing, send PUT to update
       if (isEditing && editingId) {
         const res = await fetch(`http://localhost:5000/api/opportunities/${editingId}`, {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(opportunityData),
+          body: formDataToSend,
         });
 
         const data = await res.json();
@@ -300,10 +303,9 @@ const OrganizationDashboard = () => {
       const res = await fetch("http://localhost:5000/api/opportunities", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(opportunityData),
+        body: formDataToSend,
       });
 
       const data = await res.json();
@@ -813,13 +815,12 @@ const OrganizationDashboard = () => {
 
 
                     <label className="form-label">Opportunity Image</label>
-
-
                     <input
                       type="file"
                       accept="image/*"
                       className="form-input"
                       onChange={(e) => setImageFile(e.target.files[0])}
+
                     />
                   </div>
                 </div>

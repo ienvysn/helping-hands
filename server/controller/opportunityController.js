@@ -21,6 +21,7 @@ const createOpportunity = async (req, res) => {
       cause,
       location,
       maxVolunteers,
+
     } = req.body;
 
     // Handle Multer image file path
@@ -36,7 +37,8 @@ const createOpportunity = async (req, res) => {
       });
     }
 
-    // Create opportunity (Using Number() to parse strings from FormData)
+console.log("testttt");
+
     const opportunity = await Opportunity.create({
       organizationId: organization._id,
       title,
@@ -53,7 +55,7 @@ const createOpportunity = async (req, res) => {
       isActive: true,
       imageUrl: imageUrl,
     });
-
+console.log("test");
     res.status(201).json({
       success: true,
       message: "Opportunity created successfully",
@@ -87,7 +89,7 @@ const getAllOpportunities = async (req, res) => {
     } = req.query;
 
     const filter = { isActive: true };
-    
+
 
     // Search by title, description, or tasks
     if (search) {

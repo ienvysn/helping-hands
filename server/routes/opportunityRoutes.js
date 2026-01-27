@@ -32,6 +32,7 @@ router.post(
   "/",
   isAuthenticated,
   isOrganization,
+  upload.single('image'),
   validate(createOpportunitySchema),
   createOpportunity
 );
@@ -41,6 +42,7 @@ router.put(
   "/:id",
   isAuthenticated,
   isOrganization,
+  upload.single('image'),
   validate(updateOpportunitySchema),
   updateOpportunity
 );
