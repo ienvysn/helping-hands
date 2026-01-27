@@ -310,6 +310,7 @@
 
   .eventSection {
     padding: 1.25rem;
+    margin-bottom: 1rem; 
   }
 
   .eventHeroImage {
@@ -336,6 +337,7 @@
 
   .eventSection {
     padding: 1rem;
+    margin-bottom: 0.75rem; 
   }
 
   .sectionTitle {
