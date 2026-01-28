@@ -119,7 +119,7 @@ const EventDetail = () => {
         alert("Successfully signed up for this event!");
         fetchOpportunityDetails();
       } else {
-        alert(data.message || "Failed to sign up");
+        alert(data.error);
       }
     } catch (err) {
       console.error("Error signing up:", err);
@@ -173,14 +173,19 @@ const EventDetail = () => {
         </div>
 
         <div className="navRight">
-          <button className="notificationBtn">
-            <Bell size={20} />
-          </button>
-          <div className="userProfile" onClick={() => navigate('/profile')}>
-            <User size={20} />
-            <span>{displayName}</span>
-          </div>
-        </div>
+  <button 
+    className="notificationBtn"
+    onClick={() => navigate('/notifications')}
+  >
+    <Bell size={20} />
+  </button>
+
+  <div className="userProfile" onClick={() => navigate('/profile')}>
+    <User size={20} />
+    <span>{displayName}</span>
+  </div>
+</div>
+
       </nav>
 
       {/* Event Detail Content */}

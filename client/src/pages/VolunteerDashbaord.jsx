@@ -156,9 +156,13 @@ const ProfileDashboard = () => {
         </div>
 
         <div className="navRight">
-          <button className="notificationBtn">
-            <Bell size={20} />
-          </button>
+          <button
+  className="notificationBtn"
+  onClick={() => navigate('/notifications')}
+>
+  <Bell size={20} />
+</button>
+
           <div className="userProfile" onClick={() => navigate('/profile')}>
             <User size={20} />
             <span>{displayName}</span>

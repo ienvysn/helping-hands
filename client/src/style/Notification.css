@@ -1,0 +1,127 @@
+.notificationWrapper {
+  min-height: 100vh;
+  background-color: #eef2f7;
+  font-family: "Inter", sans-serif;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 2rem;
+  background-color: #0b3a75;
+  color: #ffffff;
+}
+
+.notificationContent {
+  width: 95%;
+  max-width: 1500px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+.notificationTitle {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #111827;
+}
+
+.notificationList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.notificationCard {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.1rem 1.6rem;
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.notificationCard:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+}
+
+.icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.icon.success {
+  background-color: #dcfce7;
+  color: #22c55e;
+}
+
+.icon.info {
+  background-color: #e0ecff;
+  color: #3b82f6;
+}
+
+.icon.warning {
+  background-color: #ffedd5;
+  color: #f97316;
+}
+
+.icon.trophy {
+  background-color: #fef3c7;
+  color: #f59e0b;
+}
+
+.notificationText h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.notificationText p {
+  font-size: 13.5px;
+  color: #6b7280;
+  line-height: 1.45;
+}
+
+.time {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.notifyBtn {
+  margin-left: auto;
+  padding: 0.45rem 1rem;
+  border-radius: 6px;
+  background-color: #2563eb;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .notificationContent {
+    width: 98%;
+  }
+
+  .notificationCard {
+    padding: 0.9rem 1rem;
+  }
+
+  .notifyBtn {
+    font-size: 12px;
+    padding: 0.4rem 0.8rem;
+  }
+}

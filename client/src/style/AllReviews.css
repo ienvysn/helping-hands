@@ -1,0 +1,248 @@
+/* All Reviews Page Styles */
+
+.all-reviews-wrapper {
+  min-height: 100vh;
+  background-color: #e8eef5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+}
+
+/* Navbar (reusing existing styles) */
+.all-reviews-wrapper .navbar {
+  background-color: #1e3a5f;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.all-reviews-wrapper .navLeft {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.all-reviews-wrapper .navLogo {
+  color: white;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.all-reviews-wrapper .navMenu {
+  display: flex;
+  gap: 2rem;
+}
+
+.all-reviews-wrapper .navLink {
+  color: #cfe0ff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.all-reviews-wrapper .navLink:hover {
+  color: white;
+}
+
+.all-reviews-wrapper .navRight {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.all-reviews-wrapper .notificationBtn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.all-reviews-wrapper .userProfile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.all-reviews-wrapper .userProfile:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.all-reviews-wrapper .user-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Main Container */
+.all-reviews-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Back Button */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #1e3a5f;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-bottom: 1.5rem;
+  transition: opacity 0.2s;
+}
+
+.back-button:hover {
+  opacity: 0.7;
+}
+
+/* Page Title */
+.all-reviews-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Loading and Empty States */
+.reviews-loading,
+.no-reviews {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+/* Reviews Grid */
+.reviews-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Review Card */
+.review-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s;
+}
+
+.review-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Review Card Header */
+.review-card-header {
+  margin-bottom: 1rem;
+}
+
+.review-organization-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.25rem 0;
+}
+
+.review-event-title {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Rating Section */
+.review-rating-section {
+  margin-bottom: 1rem;
+}
+
+.review-stars-display {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* Comment Text */
+.review-comment-text {
+  font-size: 0.9375rem;
+  color: #374151;
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+}
+
+/* Date Text */
+.review-date-text {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .all-reviews-wrapper .navbar {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .all-reviews-wrapper .navLeft {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .all-reviews-wrapper .navMenu {
+    width: 100%;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+
+  .all-reviews-container {
+    padding: 1rem;
+  }
+
+  .all-reviews-title {
+    font-size: 1.5rem;
+  }
+
+  .review-card {
+    padding: 1.25rem;
+  }
+
+  .review-organization-name {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .all-reviews-wrapper .navLogo {
+    font-size: 1.1rem;
+  }
+
+  .all-reviews-wrapper .navLink {
+    font-size: 0.85rem;
+  }
+
+  .all-reviews-title {
+    font-size: 1.25rem;
+  }
+
+  .review-card {
+    padding: 1rem;
+  }
+}

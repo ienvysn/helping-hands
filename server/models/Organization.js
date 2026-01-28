@@ -42,6 +42,31 @@ const organizationProfileSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    yearEstablished: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    organizationSize: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    categories: {
+      type: [String],
+      default: [],
+    },
+    socialMedia: {
+      facebook: { type: String, trim: true, default: "" },
+      twitter: { type: String, trim: true, default: "" },
+      instagram: { type: String, trim: true, default: "" },
+      linkedin: { type: String, trim: true, default: "" },
+    },
+    description: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     averageRating: {
       type: Number,
       default: 0,

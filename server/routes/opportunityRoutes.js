@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../middleware/upload");
 const {
   createOpportunity,
   getAllOpportunities,
@@ -12,6 +13,7 @@ const {
   confirmOneSignup,
   rejectOneSignup,
   markAttendance,
+  getOrganizationStats,
 } = require("../controller/opportunityController");
 const { isAuthenticated, isOrganization } = require("../middleware/auth");
 
@@ -30,14 +32,17 @@ router.post(
   "/",
   isAuthenticated,
   isOrganization,
+  upload.single('image'),
   validate(createOpportunitySchema),
   createOpportunity
 );
 router.get("/my/list", isAuthenticated, isOrganization, getMyOpportunities);
+router.get('/my/stats', isAuthenticated, isOrganization, getOrganizationStats);
 router.put(
   "/:id",
   isAuthenticated,
   isOrganization,
+  upload.single('image'),
   validate(updateOpportunitySchema),
   updateOpportunity
 );

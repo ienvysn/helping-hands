@@ -1,0 +1,92 @@
+/* Container for everything under the Navbar */
+.profileContent {
+  width: 100%;
+  max-width: 850px;       /* Fixed width for the cards */
+  margin: 2rem auto;      /* Centering logic */
+  padding: 0 20px;        /* Horizontal gutter for mobile */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;              /* Consistent gap between cards */
+  box-sizing: border-box; /* Crucial for width calculation */
+}
+
+/* Base styles applied to both cards to force alignment */
+.profileCard, 
+.dangerCard {
+  width: 110%;            /* Forces card to fill the 850px container */
+  background: white;
+  border-radius: 12px;
+  padding: 40px;          /* Same padding ensures text starts at same spot */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box; /* Forces padding to stay INSIDE the width */
+}
+
+/* Danger Zone specific coloring */
+.dangerCard {
+  background-color: #fff5f5; 
+  border: 1px solid #feb2b2;
+}
+
+.dangerTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #dc2626;
+  margin-bottom: 8px;
+}
+
+.dangerText {
+  color: #c53030;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* Button alignment inside Danger Zone */
+.dangerButtons {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.deleteBtn, .logoutBtn {
+  flex: 1;                /* Forces buttons to be identical in size */
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.deleteBtn {
+  background: transparent;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+}
+
+.deleteBtn:hover {
+  background: #fff5f5;
+}
+
+.logoutBtn {
+  background-color: #4f8cc9;
+  color: white;
+  border: none;
+}
+
+.logoutBtn:hover {
+  background-color: #3d7ab8;
+}
+
+/* Form details alignment */
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.disabled-input {
+  background-color: #f8fafc;
+  cursor: not-allowed;
+  color: #94a3b8;
+}

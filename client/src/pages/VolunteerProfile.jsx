@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { User, Bell } from "lucide-react";
 import "../style/Profile.css";
-import { Navigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+
 
 const Profile = () => {
+    const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -144,21 +146,26 @@ const Profile = () => {
         <div className="navLeft">
           <h1 className="navLogo">helpinghands</h1>
           <div className="navMenu">
-            <Link to="/dashboard" className="navLink">
-              <span className="navIcon">▦</span> Dashboard
-            </Link>
-            <a href="#" className="navLink">
-              <span className="navIcon">✦</span> Opportunities
-            </a>
-            <a href="#" className="navLink">
-              <span className="navIcon">▥</span> My Events
-            </a>
-          </div>
+  <Link to="/dashboard" className="navLink">
+    <span className="navIcon">▦</span> Dashboard
+  </Link>
+  <Link to="/opportunities" className="navLink">
+    <span className="navIcon">✦</span> Opportunities
+  </Link>
+  <Link to="/my-events" className="navLink">
+    <span className="navIcon">▥</span> My Events
+  </Link>
+</div>
+
         </div>
         <div className="navRight">
-          <button className="notificationBtn">
-            <Bell size={20} />
-          </button>
+          <button
+  className="notificationBtn"
+  onClick={() => navigate("/notifications")}
+>
+  <Bell size={20} />
+</button>
+
           <div className="userProfile">
             <User size={20} />
 
