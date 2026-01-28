@@ -23,15 +23,13 @@ function ResetPassword() {
   setError("");
   setSuccess(false);
 
-  
-<<<<<<< HEAD
-=======
+ 
     if (!newPassword || !confirmPassword) {
       setError("Please fill in all fields");
       return;
     }
->>>>>>> origin/main
 
+    
   console.log("Submitting reset with token:", token);
   setLoading(true);
 

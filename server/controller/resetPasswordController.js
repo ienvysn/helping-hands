@@ -106,15 +106,8 @@ const resetPassword = async (req, res) => {
     
     user.resetPasswordToken = undefined;
     user.resetPasswordExpiry = undefined;
-<<<<<<< HEAD
-=======
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
-    
-    user.passwordHash = hashedPassword;
-    
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpiry = undefined;
->>>>>>> origin/main
+
+
     
     
 
