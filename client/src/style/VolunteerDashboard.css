@@ -349,12 +349,10 @@
 }
 
 /* Responsive Design – Volunteer Dashboard */
-
 @media (max-width: 1024px) {
   .dashboardContent {
     padding: 1.5rem;
   }
-
   .summaryStats {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -362,23 +360,39 @@
 
 @media (max-width: 768px) {
   .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .navLeft,
-  .navMenu,
-  .navRight {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; 
     width: 100%;
   }
 
+  .navLeft, .navMenu, .navRight {
+    width: 100%; 
+  }
+
   .navMenu {
-    justify-content: space-around;
+    display: flex; 
+    flex-wrap: wrap;      
+    justify-content: flex-start; 
+    gap: 0.5rem;  
   }
 
   .navRight {
-    justify-content: flex-end;
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; 
+    justify-content: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    text-align: left;
+  }
+
+  .navRight button,
+  .navRight .userProfile {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    align-self: flex-start;
   }
 
   .summaryLeft {
