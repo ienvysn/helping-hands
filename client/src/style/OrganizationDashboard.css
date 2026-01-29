@@ -15,24 +15,39 @@
 
 .navbar {
   background-color: #1e3a5f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0; /* padding handled by inner container */
+}
+
+.nav-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
 }
 
-/* Styles used by VolunteerOpportunity navbar markup */
-.navLeft {
+.nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: auto;
+}
+
+.hamburger-btn {
+  display: none; /* Hidden by default on desktop */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.nav-content {
   display: flex;
   align-items: center;
-  gap: 3rem;
-}
-
-.navLogo {
-  color: white;
-  font-size: 1.35rem;
-  font-weight: 600;
+  justify-content: space-between;
+  flex: 1;
+  margin-left: 3rem;
 }
 
 .navMenu {
@@ -40,11 +55,21 @@
   gap: 2rem;
 }
 
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-left: auto; /* Push to right */
+}
+
 .navLink {
   color: #cfe0ff;
   text-decoration: none;
   font-size: 0.95rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .navLink.active {
@@ -616,28 +641,60 @@
   .stats-container {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  .nav-links {
-    gap: 1rem;
-  }
 }
 
 @media (max-width: 768px) {
-  .navbar {
+  .nav-container {
     flex-direction: column;
-    gap: 1rem;
+    align-items: flex-start;
     padding: 1rem;
   }
 
-  .nav-left {
+  .nav-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .hamburger-btn {
+    display: block; /* Show on mobile */
+  }
+
+  /* Hide nav content by default on mobile, show when .open class is present */
+  .nav-content {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-left: 0;
+    margin-top: 1rem;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .nav-content.open {
+    display: flex;
+    animation: slideDown 0.3s ease-out forwards;
+  }
+
+  .navMenu {
     flex-direction: column;
     gap: 1rem;
     width: 100%;
   }
 
-  .nav-links {
+  .navRight {
     width: 100%;
-    justify-content: space-around;
+    justify-content: flex-start;
+    margin-left: 0;
+    margin-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+  }
+
+  .navLink {
+      padding: 0.5rem 0;
+      width: 100%;
   }
 
   .stats-container {
@@ -662,6 +719,19 @@
 
   .content-card {
     padding: 1rem;
+  }
+
+  /* Initial hidden state helper if needed, but display:none handles it */
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -1249,7 +1319,7 @@
   .attendance-stats {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .attendance-summary {
     grid-template-columns: repeat(2, 1fr);
   }

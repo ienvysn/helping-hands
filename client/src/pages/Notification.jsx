@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Bell, User, CheckCircle, Trophy, AlertTriangle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import "../style/Notification.css";
 
 const Notification = () => {
@@ -9,7 +10,17 @@ const Notification = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Navbar state
+  const [displayName, setDisplayName] = useState("User");
+  const [userType, setUserType] = useState("volunteer");
+
   useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+        const user = JSON.parse(userStr);
+        setDisplayName(user.profile?.name || user.profile?.organizationName || "User");
+        setUserType(user.userType || "volunteer");
+    }
     fetchNotifications();
   }, []);
 
@@ -90,32 +101,7 @@ const Notification = () => {
   return (
     <div className="notificationWrapper">
       {/* Navbar */}
-      <nav className="navbar">
-        <div className="navLeft">
-          <h1 className="navLogo">helpinghands</h1>
-          <div className="navMenu">
-            <Link to="/dashboard" className="navLink">
-              <span className="navIcon">▦</span> Dashboard
-            </Link>
-            <Link to="/opportunities" className="navLink">
-              <span className="navIcon">✦</span> Opportunities
-            </Link>
-            <Link to="/my-events" className="navLink">
-              <span className="navIcon">▥</span> My Events
-            </Link>
-          </div>
-        </div>
-
-        <div className="navRight">
-          <button className="notificationBtn active">
-            <Bell size={20} />
-          </button>
-          <div className="userProfile" onClick={() => navigate("/profile")}>
-            <User size={20} />
-            <span>Profile</span>
-          </div>
-        </div>
-      </nav>
+      <Navbar userType={userType} displayName={displayName} />
 
       {/* Content */}
       <div className="notificationContent">

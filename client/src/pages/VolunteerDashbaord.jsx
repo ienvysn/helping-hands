@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { User, Bell, Star, Lock, Calendar, Clock, MapPin } from "lucide-react";
+import { Star, Lock, Clock, MapPin, User } from "lucide-react";
 import "../style/VolunteerDashboard.css";
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Navbar from "../components/Navbar";
 
 const ProfileDashboard = () => {
   const navigate = useNavigate();
@@ -139,36 +140,7 @@ const ProfileDashboard = () => {
   return (
     <div className="dashboardWrapper">
       {/* Navbar */}
-      <nav className="navbar">
-        <div className="navLeft">
-          <h1 className="navLogo">helpinghands</h1>
-          <div className="navMenu">
-            <Link to="/dashboard" className="navLink">
-              <span className="navIcon">▦</span> Dashboard
-            </Link>
-            <Link to="/opportunities" className="navLink">
-              <span className="navIcon">✦</span> Opportunities
-            </Link>
-            <Link to="/my-events" className="navLink">
-              <span className="navIcon">▥</span> My Events
-            </Link>
-          </div>
-        </div>
-
-        <div className="navRight">
-          <button
-  className="notificationBtn"
-  onClick={() => navigate('/notifications')}
->
-  <Bell size={20} />
-</button>
-
-          <div className="userProfile" onClick={() => navigate('/profile')}>
-            <User size={20} />
-            <span>{displayName}</span>
-          </div>
-        </div>
-      </nav>
+      <Navbar userType="volunteer" displayName={displayName} />
 
       {/* Dashboard Content */}
       <div className="dashboardContent">

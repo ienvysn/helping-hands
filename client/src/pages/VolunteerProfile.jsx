@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { User, Bell } from "lucide-react";
 import "../style/Profile.css";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 
 const Profile = () => {
@@ -17,6 +18,14 @@ const Profile = () => {
     displayName: "",
     aboutMe: "",
   });
+
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordMsg, setPasswordMsg] = useState({ type: "", text: "" });
 
   useEffect(() => {
     fetchProfile();
@@ -132,6 +141,50 @@ const Profile = () => {
     }
   };
 
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setPasswordMsg({ type: "", text: "" });
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordMsg({ type: "error", text: "New passwords do not match" });
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+        setPasswordMsg({ type: "error", text: "Password must be at least 6 characters" });
+        return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:5000/api/auth/change-password", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setPasswordMsg({ type: "success", text: "Password updated successfully" });
+        setTimeout(() => {
+            setChangingPassword(false);
+            setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+            setPasswordMsg({ type: "", text: "" });
+        }, 2000);
+      } else {
+        setPasswordMsg({ type: "error", text: data.message || "Failed to update password" });
+      }
+    } catch (error) {
+      setPasswordMsg({ type: "error", text: "Server error" });
+    }
+  };
+
   if (loading) return <div className="loading">Loading...</div>;
   if (!profile)
     return <div className="error">{error || "Failed to load profile"}</div>;
@@ -142,37 +195,7 @@ const Profile = () => {
 
   return (
     <div className="profileWrapper">
-      <nav className="navbar">
-        <div className="navLeft">
-          <h1 className="navLogo">helpinghands</h1>
-          <div className="navMenu">
-  <Link to="/dashboard" className="navLink">
-    <span className="navIcon">▦</span> Dashboard
-  </Link>
-  <Link to="/opportunities" className="navLink">
-    <span className="navIcon">✦</span> Opportunities
-  </Link>
-  <Link to="/my-events" className="navLink">
-    <span className="navIcon">▥</span> My Events
-  </Link>
-</div>
-
-        </div>
-        <div className="navRight">
-          <button
-  className="notificationBtn"
-  onClick={() => navigate("/notifications")}
->
-  <Bell size={20} />
-</button>
-
-          <div className="userProfile">
-            <User size={20} />
-
-            <span>{currentDisplayName}</span>
-          </div>
-        </div>
-      </nav>
+      <Navbar userType="volunteer" displayName={currentDisplayName} />
 
       <div className="profileContent">
         <div className="profileHeader">
@@ -288,15 +311,74 @@ const Profile = () => {
               <p className="settingsLabel">Change password</p>
               <p className="passwordDots">•••••••</p>
             </div>
-            <button
-              className="updatePasswordBtn"
-              onClick={() => alert("Coming soon!")}
-            >
-              Update password
-            </button>
+            {!changingPassword ? (
+                <button
+                className="updatePasswordBtn"
+                onClick={() => setChangingPassword(true)}
+                >
+                Update password
+                </button>
+            ) : (
+                <button
+                className="cancelBtn"
+                onClick={() => {
+                    setChangingPassword(false);
+                    setPasswordMsg({ type: "", text: "" });
+                }}
+                >
+                Cancel
+                </button>
+            )}
+          </div>
+
+          {changingPassword && (
+            <form onSubmit={handlePasswordSubmit} className="passwordForm" style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
+                {passwordMsg.text && (
+                    <div style={{
+                        padding: '10px',
+                        marginBottom: '15px',
+                        borderRadius: '4px',
+                        backgroundColor: passwordMsg.type === 'error' ? '#ffebee' : '#e8f5e9',
+                        color: passwordMsg.type === 'error' ? '#c62828' : '#2e7d32'
+                    }}>
+                        {passwordMsg.text}
+                    </div>
+                )}
+                <div className="formGroup">
+                  <label className="profileLabel">Current Password</label>
+                  <input
+                    type="password"
+                    className="profileInput"
+                    value={passwordData.currentPassword}
+                    onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="formGroup">
+                    <label className="profileLabel">New Password</label>
+                    <input
+                        type="password"
+                        className="profileInput"
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                        required
+                    />
+                </div>
+                <div className="formGroup">
+                    <label className="profileLabel">Confirm New Password</label>
+                    <input
+                        type="password"
+                        className="profileInput"
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                        required
+                    />
+                </div>
+                <button type="submit" className="saveBtn">Update Password</button>
+            </form>
+          )}
           </div>
         </div>
-      </div>
 
       <div className="dangerCard">
         <h3 className="dangerTitle">Danger zone</h3>

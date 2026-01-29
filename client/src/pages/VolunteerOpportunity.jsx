@@ -7,6 +7,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import "../style/VolunteerOpportunity.css";
 
 const OpportunityCard = ({ opportunity }) => {
@@ -181,36 +182,7 @@ const VolunteerOpportunity = () => {
 
   return (
     <div className="dashboardWrapper">
-      <nav className="navbar">
-        <div className="navLeft">
-          <h1 className="navLogo">helpinghands</h1>
-          <div className="navMenu">
-            <Link to="/dashboard" className="navLink">
-              <span className="navIcon">▦</span> Dashboard
-            </Link>
-            <Link to="/opportunities" className="navLink active">
-              <span className="navIcon">✦</span> Opportunities
-            </Link>
-            <Link to="/my-events" className="navLink">
-              <span className="navIcon">▥</span> My Events
-            </Link>
-          </div>
-        </div>
-
-        <div className="navRight">
-          <button
-            className="notificationBtn"
-            onClick={() => navigate("/notifications")}
-          >
-            <Bell size={20} />
-          </button>
-
-          <div className="userProfile" onClick={() => navigate("/profile")}>
-            <User size={20} />
-            <span>{displayName}</span>
-          </div>
-        </div>
-      </nav>
+      <Navbar userType="volunteer" displayName={displayName} />
 
       {/*Page Content*/}
       <div className="opportunityContent">

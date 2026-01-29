@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { User, Bell, Calendar, MapPin, Clock, Star } from "lucide-react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ReviewModal from "../components/ReviewModal";
+import Navbar from "../components/Navbar";
 import "../style/MyEvents.css";
 
 const MyEvents = () => {
@@ -121,36 +122,7 @@ const MyEvents = () => {
   return (
     <div className="myevents-wrapper">
       {/* Navbar */}
-      <nav className="navbar">
-        <div className="navLeft">
-          <h1 className="navLogo">helpinghands</h1>
-          <div className="navMenu">
-            <Link to="/dashboard" className="navLink">
-              <span className="navIcon">▦</span> Dashboard
-            </Link>
-            <Link to="/opportunities" className="navLink">
-              <span className="navIcon">✦</span> Opportunities
-            </Link>
-            <Link to="/my-events" className="navLink active">
-              <span className="navIcon">▥</span> My Events
-            </Link>
-          </div>
-        </div>
-
-        <div className="navRight">
-         <button
-  className="notificationBtn"
-  onClick={() => navigate("/notifications")}
->
-  <Bell size={20} />
-</button>
-
-          <div className="userProfile" onClick={() => navigate("/profile")}>
-            <User size={20} />
-            <span>{displayName}</span>
-          </div>
-        </div>
-      </nav>
+      <Navbar userType="volunteer" displayName={displayName} />
 
       {/* Content */}
       <div className="myevents-content">
@@ -292,7 +264,7 @@ const MyEvents = () => {
                         </div>
                       </div>
                       <div className="event-card-right">
-                        {event.status === "attended" && 
+                        {event.status === "attended" &&
                          new Date(event.opportunityId?.eventDate) < now && (
                           <>
                             {hasReviewed(event.opportunityId?._id) ? (

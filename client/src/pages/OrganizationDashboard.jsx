@@ -1,30 +1,33 @@
 import React, { useState, useEffect } from "react";
 import {
+  ChevronRight,
+  Edit,
+  Trash2,
   Calendar,
   Users,
   Clock,
   Star,
-  Bell,
-  User,
-  X,
+  HelpCircle,
   Plus,
   Eye,
   MoreVertical,
+  X,
   Menu,
-  HelpCircle,
-  Edit,
-  Trash2,
-  ChevronRight,
-  ArrowLeft,
+  Bell,
+  User,
   MapPin,
   Check,
+  ArrowLeft,
 } from "lucide-react";
+
 import { useNavigate, Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import "../style/OrganizationDashboard.css";
 
 const OrganizationDashboard = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  // canvas state moved to Navbar component
   const [organizationName, setOrganizationName] = useState("Organization");
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -592,26 +595,7 @@ const OrganizationDashboard = () => {
     return (
       <div className="dashboard-wrapper">
         {/* Navbar */}
-        <nav className="navbar">
-          <div className="navLeft">
-            <h1 className="navLogo">helpinghands</h1>
-            <div className="navMenu">
-              <Link to="/organization-dashboard" className="navLink">
-                <span className="navIcon">▦</span> Dashboard
-              </Link>
-
-            </div>
-          </div>
-          <div className="navRight">
-            <button className="notificationBtn">
-              <Bell size={20} />
-            </button>
-            <div className="userProfile" onClick={() => navigate('/organization-profile')}>
-              <User size={20} />
-              <span className="user-name">{organizationName}</span>
-            </div>
-          </div>
-        </nav>
+        <Navbar userType="organization" displayName={organizationName} />
 
         {/* Stats */}
         <div className="stats-container">

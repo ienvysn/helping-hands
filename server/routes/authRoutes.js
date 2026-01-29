@@ -5,6 +5,7 @@ const {
   register,
   login,
   deleteAccount,
+  changePassword,
 } = require("../controller/authController");
 const { isAuthenticated } = require("../middleware/auth");
 const {
@@ -24,6 +25,7 @@ router.post("/login", validate(loginSchema), login);
 router.post("/forget-password", forgetPassword);
 router.post("/reset-password", resetPassword);
 router.delete("/delete", isAuthenticated, deleteAccount);
+router.post("/change-password", isAuthenticated, changePassword);
 
 // Google OAuth routes
 router.get("/google", initiateGoogleAuth);

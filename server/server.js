@@ -8,8 +8,8 @@ const authRoute = require("./routes/authRoutes");
 const opportunityRoutes = require("./routes/opportunityRoutes");
 const userRoutes = require("./routes/userRoutes");
 const signupRoutes = require("./routes/signupRoute");
-const reviewRoutes = require("./routes/reviewRoutes")
-const notificationRoutes= require("./routes/notificationRoutes")
+const reviewRoutes = require("./routes/reviewRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 require("./utils/passport");
 
@@ -29,8 +29,6 @@ app.use(express.json());
 app.use("/images", express.static("../client/public/images"));
 
 const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
-
 
 app.use(helmet());
 
@@ -43,7 +41,6 @@ app.use(helmet());
 
 // app.use(limiter);
 
-
 ///required for Oauth
 app.use(
   session({
@@ -54,7 +51,7 @@ app.use(
       secure: false,
       maxAge: 10 * 60 * 1000,
     },
-  })
+  }),
 );
 app.use(passport.initialize());
 app.use(passport.session());
@@ -62,14 +59,11 @@ app.use("/api/auth", authRoute);
 app.use("/api/user", userRoutes);
 app.use("/api/opportunities", opportunityRoutes);
 app.use("/api/signups", signupRoutes);
-app.use("/api/reviews", reviewRoutes)
-app.use("/api/notifications",notificationRoutes)
-
-
-
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) =>
-  res.json({ message: "Volunteer App API is running" })
+  res.json({ message: "Volunteer App API is running" }),
 );
 
 const PORT = process.env.PORT || 5000;
